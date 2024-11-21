@@ -3,7 +3,7 @@
   import { useMutation } from "@tanstack/react-query";
   import { api } from "../../convex/_generated/api";
   import { convexQuery } from "@convex-dev/react-query";
-  import { useSuspenseQuery } from "@tanstack/react-query";
+  import { useSuspenseQuery, infiniteQueryOptions } from "@tanstack/react-query";
   import { createStore, atom, useAtomValue } from "jotai";
   import { z } from "zod";
   import VoteFallback from "~/utils/vote-fallback";
