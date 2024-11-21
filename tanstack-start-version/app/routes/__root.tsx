@@ -1,4 +1,3 @@
-// app/routes/__root.tsx
 import { QueryClient } from "@tanstack/react-query";
 import {
   Link,
@@ -8,25 +7,30 @@ import {
 } from "@tanstack/react-router";
 import { Meta, Scripts } from "@tanstack/start";
 import type { ReactNode } from "react";
+import type { Store as JotaiStore } from "jotai";
 import appCss from "~/styles/app.css?url";
-import type { nextBattlesStore } from "~/utils/preloaded-battles";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
+  jotaiStore: JotaiStore;
 }>()({
-  meta: () => [
-    {
-      charSet: "utf-8",
-    },
-    {
-      name: "viewport",
-      content: "width=device-width, initial-scale=1",
-    },
-    {
-      title: "TanStack Start Starter",
-    },
-  ],
-  links: () => [{ rel: "stylesheet", href: appCss }],
+  head: () => {
+    return {
+      meta: [
+        {
+          charSet: "utf-8",
+        },
+        {
+          name: "viewport",
+          content: "width=device-width, initial-scale=1",
+        },
+        {
+          title: "TanStack Start Starter",
+        },
+      ],
+      links: [{ rel: "stylesheet", href: appCss }],
+    }
+  },
   component: RootComponent,
 });
 
@@ -51,9 +55,9 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
           <div className="flex items-center justify-between">
             <div className="flex items-baseline">
               <Link href="/" className="font-bold text-3xl">
-                round<span className="text-blue-300">est</span>
+                round<span className="text-cyan-500">est</span>
                 <span className="text-gray-400 font-extralight pl-2 text-2xl">
-                  (React Server Components)
+                  (Tanstack Start + Convex)
                 </span>
               </Link>
             </div>
