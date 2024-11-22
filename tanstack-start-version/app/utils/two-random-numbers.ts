@@ -4,5 +4,8 @@ export function getTwoRandomNumbers(max: number) {
   do {
     blue = Math.floor(Math.random() * max) + 1;
   } while (blue === red);
-  return [red, blue] as const;
+
+  const result: [number, number] = [red, blue];
+
+  return result;
 }

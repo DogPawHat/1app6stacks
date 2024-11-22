@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@convex-dev/aggregate':
+        specifier: ^0.1.16
+        version: 0.1.16(convex@1.17.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@convex-dev/react-query':
         specifier: 0.0.0-alpha.8
         version: 0.0.0-alpha.8(@tanstack/react-query@5.61.0(react@18.3.1))(convex@1.17.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
@@ -204,6 +207,11 @@ packages:
   '@cloudflare/kv-asset-handler@0.3.4':
     resolution: {integrity: sha512-YLPHc8yASwjNkmcDMQMY35yiWjoKAKnhUbPRszBRS0YgH+IXtsMp61j+yTcnCE3oO2DgP0U3iejLC8FTtKDC8Q==}
     engines: {node: '>=16.13'}
+
+  '@convex-dev/aggregate@0.1.16':
+    resolution: {integrity: sha512-Uqx+rmjpMwFHrNf6H6dX+DG922Pxlk8vSp/ciF6At/QYlDY2C7++65GROtI5ySmpZZhNI9zvh8nGTg1kEQpOJw==}
+    peerDependencies:
+      convex: ~1.16.5 || ~1.17.0
 
   '@convex-dev/react-query@0.0.0-alpha.8':
     resolution: {integrity: sha512-Rv/q7/CplU75f7ckBd2vh+HoeeQ0tOrjwMl14Hk7D/03e55oUIU0TV5JYYzC79ZQyyAtoj7CmCo5ZxcmtKNv1Q==}
@@ -3867,6 +3875,10 @@ snapshots:
   '@cloudflare/kv-asset-handler@0.3.4':
     dependencies:
       mime: 3.0.0
+
+  '@convex-dev/aggregate@0.1.16(convex@1.17.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
+    dependencies:
+      convex: 1.17.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
   '@convex-dev/react-query@0.0.0-alpha.8(@tanstack/react-query@5.61.0(react@18.3.1))(convex@1.17.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
     dependencies:

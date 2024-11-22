@@ -7,12 +7,10 @@ import {
 } from "@tanstack/react-router";
 import { Meta, Scripts } from "@tanstack/start";
 import type { ReactNode } from "react";
-import type { Store as JotaiStore } from "jotai";
 import appCss from "~/styles/app.css?url";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
-  jotaiStore: JotaiStore;
 }>()({
   head: () => {
     return {
@@ -29,7 +27,7 @@ export const Route = createRootRouteWithContext<{
         },
       ],
       links: [{ rel: "stylesheet", href: appCss }],
-    }
+    };
   },
   component: RootComponent,
 });

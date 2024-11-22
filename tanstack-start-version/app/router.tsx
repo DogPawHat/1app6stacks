@@ -3,10 +3,6 @@ import { QueryClient } from "@tanstack/react-query";
 import { routerWithQueryClient } from "@tanstack/react-router-with-query";
 import { convexQuery, ConvexQueryClient } from "@convex-dev/react-query";
 import { ConvexProvider } from "convex/react";
-import {
-  createStore as createJotaiStore,
-  Provider as JotaiProvider,
-} from "jotai";
 import { routeTree } from "./routeTree.gen";
 
 export function createRouter() {
@@ -15,7 +11,6 @@ export function createRouter() {
     console.error("missing envar VITE_CONVEX_URL");
   }
   const convexQueryClient = new ConvexQueryClient(CONVEX_URL);
-  const jotaiStore = createJotaiStore();
 
   const queryClient: QueryClient = new QueryClient({
     defaultOptions: {
@@ -31,13 +26,11 @@ export function createRouter() {
     createTanStackRouter({
       routeTree,
       defaultPreload: "intent",
-      context: { queryClient, jotaiStore },
+      context: { queryClient },
       Wrap: ({ children }: { children: React.ReactNode }) => (
-        <JotaiProvider store={jotaiStore}>
           <ConvexProvider client={convexQueryClient.convexClient}>
             {children}
           </ConvexProvider>
-        </JotaiProvider>
       ),
     }),
     queryClient
