@@ -39,11 +39,10 @@ function VoteContent() {
     convexQuery(api.pokemon.getPair, { randomSeed: pokemonSeed })
   );
 
-  const updateSeed = useUpdatePokemonSeed();
+  // const updateSeed = useUpdatePokemonSeed();
 
   const { mutate: vote } = useMutation({
     mutationFn: useConvexMutation(api.pokemon.vote),
-    onSuccess: updateSeed,
   });
 
   return (
