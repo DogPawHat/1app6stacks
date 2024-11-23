@@ -11,15 +11,6 @@ import { PokemonSprite } from "~/utils/sprite";
 import { getRandomNumberQueryOptions } from "~/utils/get-random-number";
 
 export const Route = createFileRoute("/")({
-  loader: async (options) => {
-    void options.context.queryClient
-      .ensureQueryData(getRandomNumberQueryOptions())
-      .then(async (seed) => {
-        await options.context.queryClient.ensureQueryData(
-          convexQuery(api.pokemon.getPair, { randomSeed: seed })
-        );
-      });
-  },
   component: VoteComponent,
 });
 
