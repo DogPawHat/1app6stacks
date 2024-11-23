@@ -1,7 +1,7 @@
 import { Suspense } from "react";
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useConvexMutation } from "@convex-dev/react-query";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { api } from "../../convex/_generated/api";
 import { convexQuery } from "@convex-dev/react-query";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -9,15 +9,6 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import VoteFallback from "~/utils/vote-fallback";
 import { PokemonSprite } from "~/utils/sprite";
 import { getRandomNumberQueryOptions } from "~/utils/get-random-number";
-
-function useUpdatePokemonSeed() {
-  const queryClient = useQueryClient();
-  return () => {
-    queryClient.invalidateQueries({
-      queryKey: getRandomNumberQueryOptions().queryKey,
-    });
-  };
-}
 
 export const Route = createFileRoute("/")({
   loader: async (options) => {

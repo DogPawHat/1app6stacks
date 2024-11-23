@@ -17,15 +17,10 @@
     "@tanstack/start": "^1.82.1",
     "@xstate/store": "^2.6.1",
     "convex": "^1.17.2",
-    "geist": "^1.3.1",
-    "immer": "^10.1.1",
-    "jotai": "^2.10.3",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "tsx": "^4.19.2",
-    "vinxi": "^0.4.3",
-    "zod": "^3.23.8",
-    "zustand": "^5.0.1"
+    "vinxi": "^0.4.3"
   },
   "devDependencies": {
     "@types/node": "^22",
