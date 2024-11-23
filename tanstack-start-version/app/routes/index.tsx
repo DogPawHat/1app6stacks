@@ -1,26 +1,45 @@
 import { Suspense } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useConvexMutation } from "@convex-dev/react-query";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "../../convex/_generated/api";
 import { convexQuery } from "@convex-dev/react-query";
 import { useSuspenseQuery } from "@tanstack/react-query";
 
 import VoteFallback from "~/utils/vote-fallback";
 import { PokemonSprite } from "~/utils/sprite";
-import { usePokemonSeed, useUpdatePokemonSeed } from "~/utils/seed-store";
+import { getRandomNumberQueryOptions } from "~/utils/get-random-number";
+
+function useUpdatePokemonSeed() {
+  const queryClient = useQueryClient();
+  return () => {
+    queryClient.invalidateQueries({
+      queryKey: getRandomNumberQueryOptions().queryKey,
+    });
+  };
+}
 
 export const Route = createFileRoute("/")({
+  loader: async (options) => {
+    void options.context.queryClient
+      .ensureQueryData(getRandomNumberQueryOptions())
+      .then(async (seed) => {
+        await options.context.queryClient.ensureQueryData(
+          convexQuery(api.pokemon.getPair, { randomSeed: seed })
+        );
+      });
+  },
   component: VoteComponent,
 });
 
 function VoteContent() {
-  const seed = usePokemonSeed();
-  const updateSeed = useUpdatePokemonSeed();
+  const { data: pokemonSeed } = useSuspenseQuery(getRandomNumberQueryOptions());
 
   const { data: twoPokemon } = useSuspenseQuery(
-    convexQuery(api.pokemon.getPair, { randomSeed: seed })
+    convexQuery(api.pokemon.getPair, { randomSeed: pokemonSeed })
   );
+
+  const updateSeed = useUpdatePokemonSeed();
 
   const { mutate: vote } = useMutation({
     mutationFn: useConvexMutation(api.pokemon.vote),
@@ -30,10 +49,7 @@ function VoteContent() {
   return (
     <div className="flex justify-center gap-16 items-center min-h-[80vh]">
       {twoPokemon.map((pokemon, index) => (
-        <div
-          key={pokemon.dexId}
-          className="flex flex-col items-center gap-4"
-        >
+        <div key={pokemon.dexId} className="flex flex-col items-center gap-4">
           <PokemonSprite dexId={pokemon.dexId} className="w-64 h-64" />
           <div className="text-center">
             <span className="text-gray-500 text-lg">#{pokemon.dexId}</span>
@@ -57,7 +73,7 @@ function VoteContent() {
   );
 }
 
-function VoteComponent() {
+function VoteComponent({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex justify-center gap-16 items-center min-h-[80vh]">
       <Suspense fallback={<VoteFallback />}>

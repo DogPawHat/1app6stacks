@@ -1,12 +1,10 @@
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
 import { QueryClient } from "@tanstack/react-query";
 import { routerWithQueryClient } from "@tanstack/react-router-with-query";
+import { Provider as JotaiProvider } from "jotai";
 import { ConvexQueryClient } from "@convex-dev/react-query";
 import { ConvexProvider } from "convex/react";
 import { routeTree } from "./routeTree.gen";
-import { createPokemonSeedStore, SeedStoreContext } from "./utils/seed-store";
-
-
 
 export function createRouter() {
   const CONVEX_URL = (import.meta as any).env.VITE_CONVEX_URL!;
@@ -14,8 +12,6 @@ export function createRouter() {
     console.error("missing envar VITE_CONVEX_URL");
   }
   const convexQueryClient = new ConvexQueryClient(CONVEX_URL);
-
-  const pokemonSeedStore = createPokemonSeedStore();
 
   const queryClient: QueryClient = new QueryClient({
     defaultOptions: {
@@ -31,13 +27,11 @@ export function createRouter() {
     createTanStackRouter({
       routeTree,
       defaultPreload: "intent",
-      context: { queryClient, pokemonSeedStore },
+      context: { queryClient },
       Wrap: ({ children }: { children: React.ReactNode }) => (
-        <SeedStoreContext.Provider value={pokemonSeedStore}>
-          <ConvexProvider client={convexQueryClient.convexClient}>
-            {children}
-          </ConvexProvider>
-        </SeedStoreContext.Provider>
+        <ConvexProvider client={convexQueryClient.convexClient}>
+          {children}
+        </ConvexProvider>
       ),
     }),
     queryClient
