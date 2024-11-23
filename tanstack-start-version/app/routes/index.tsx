@@ -1,55 +1,39 @@
-import {
-  createFileRoute,
-  useRouter,
-} from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useConvexMutation } from "@convex-dev/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { api } from "../../convex/_generated/api";
 import { convexQuery } from "@convex-dev/react-query";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { atom, createStore, useAtomValue, Provider as JotaiProvider } from "jotai";
+
 import VoteFallback from "~/utils/vote-fallback";
 import { PokemonSprite } from "~/utils/sprite";
 import { getTwoRandomNumbers } from "~/utils/two-random-numbers";
 
-const currentBattleAtom = atom<Promise<[number, number]>>(
-  new Promise(() => {}) as Promise<[number, number]>
-);
 
-export const Route = createFileRoute("/")((() => {
-  const jotaiStore = createStore();
+export const Route = createFileRoute("/")({
+  loader: async (opts) => {
+    const currentBattle = getTwoRandomNumbers(1025);
 
-  return {
-    loader: async (opts) => {
-      const currentBattle = getTwoRandomNumbers(1025);
+    const ensureDataPromise = opts.context.queryClient.ensureQueryData(
+      convexQuery(api.pokemon.getTwoPokemon, {
+        dexNumber1: currentBattle[0],
+        dexNumber2: currentBattle[1],
+      })
+    );
 
-      jotaiStore.set(currentBattleAtom, Promise.resolve(currentBattle));
-
-      const ensureDataPromise = opts.context.queryClient.ensureQueryData(
-        convexQuery(api.pokemon.getTwoPokemon, {
-          dexNumber1: currentBattle[0],
-          dexNumber2: currentBattle[1],
-        })
-      );
-
-      await ensureDataPromise;
-    },
-    pendingComponent: () => (
-      <VoteContainerComponent>
-        <VoteFallback />
-      </VoteContainerComponent>
-    ),
-    component: () => (
-      <JotaiProvider store={jotaiStore}>
-        <VoteComponent />
-      </JotaiProvider>
-    ),
-  };
-})());
+    await ensureDataPromise;
+    return currentBattle;
+  },
+  pendingComponent: () => (
+    <VoteContainerComponent>
+      <VoteFallback />
+    </VoteContainerComponent>
+  ),
+  component: VoteComponent,
+});
 
 function VoteComponent() {
-  const router = useRouter();
-  const currentBattle = useAtomValue(currentBattleAtom);
+  const currentBattle = Route.useLoaderData();
 
   const { data: twoPokemon } = useSuspenseQuery(
     convexQuery(api.pokemon.getTwoPokemon, {
@@ -60,9 +44,6 @@ function VoteComponent() {
 
   const { mutate: recordBattle } = useMutation({
     mutationFn: useConvexMutation(api.pokemon.recordBattle),
-    onSuccess: () => {
-      router.invalidate();
-    },
   });
 
   return (
@@ -79,19 +60,18 @@ function VoteComponent() {
                 #{pokemon.dexNumber}
               </span>
               <h2 className="text-2xl font-bold capitalize">{pokemon.name}</h2>
-              <form className="mt-4">
-                <button
-                  onClick={() =>
-                    recordBattle({
-                      winnerId: twoPokemon[index === 0 ? 1 : 0]._id,
-                      loserId: pokemon._id,
-                    })
-                  }
-                  className="px-8 py-3 bg-blue-500 text-white rounded-lg text-lg font-semibold hover:bg-blue-600 transition-colors"
-                >
-                  Vote
-                </button>
-              </form>
+              <button
+                type="button"
+                onClick={() =>
+                  recordBattle({
+                    winnerId: pokemon._id,
+                    loserId: twoPokemon[index === 0 ? 1 : 0]._id,
+                  })
+                }
+                className="px-8 py-3 bg-blue-500 text-white rounded-lg text-lg font-semibold hover:bg-blue-600 transition-colors"
+              >
+                Vote
+              </button>
             </div>
           </div>
         ))}
