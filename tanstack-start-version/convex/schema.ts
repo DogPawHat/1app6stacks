@@ -3,13 +3,16 @@ import { v } from "convex/values";
 
 export default defineSchema({
   pokemon: defineTable({
-    dexNumber: v.number(),
     name: v.string(),
-  }).index("dexNumber", ["dexNumber"]),
+    dexId: v.number(),
+    tally: v.object({
+      winPercentage: v.number(),
+      upVotes: v.number(),
+      downVotes: v.number(),
+    }),
+  }).index("by_tally", ["tally.winPercentage", "tally.upVotes"]),
   votes: defineTable({
-    votedFor: v.id("pokemon"),
-    votedAgainst: v.id("pokemon"),
-  })
-    .index("votedFor", ["votedFor"])
-    .index("votedAgainst", ["votedAgainst"]),
+    votedForId: v.id("pokemon"),
+    votedAgainstId: v.id("pokemon"),
+  }),
 });

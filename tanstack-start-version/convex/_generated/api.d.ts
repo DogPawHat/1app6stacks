@@ -38,7 +38,7 @@ export declare const internal: FilterApi<
 >;
 
 export declare const components: {
-  aggregate: {
+  randomPokemonAggregate: {
     btree: {
       aggregateBetween: FunctionReference<
         "query",

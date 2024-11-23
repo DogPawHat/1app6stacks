@@ -4,7 +4,10 @@ import { routerWithQueryClient } from "@tanstack/react-router-with-query";
 import { ConvexQueryClient } from "@convex-dev/react-query";
 import { ConvexProvider } from "convex/react";
 import { routeTree } from "./routeTree.gen";
-import { createStore, Provider as JotaiProvider } from "jotai";
+import { createPokemonSeedStore, SeedStoreContext } from "./utils/seed-store";
+
+
+
 export function createRouter() {
   const CONVEX_URL = (import.meta as any).env.VITE_CONVEX_URL!;
   if (!CONVEX_URL) {
@@ -12,8 +15,8 @@ export function createRouter() {
   }
   const convexQueryClient = new ConvexQueryClient(CONVEX_URL);
 
+  const pokemonSeedStore = createPokemonSeedStore();
 
-  const jotaiStore = createStore();
   const queryClient: QueryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -28,13 +31,13 @@ export function createRouter() {
     createTanStackRouter({
       routeTree,
       defaultPreload: "intent",
-      context: { queryClient, jotaiStore },
+      context: { queryClient, pokemonSeedStore },
       Wrap: ({ children }: { children: React.ReactNode }) => (
-        <JotaiProvider store={jotaiStore}>
+        <SeedStoreContext.Provider value={pokemonSeedStore}>
           <ConvexProvider client={convexQueryClient.convexClient}>
             {children}
           </ConvexProvider>
-        </JotaiProvider>
+        </SeedStoreContext.Provider>
       ),
     }),
     queryClient

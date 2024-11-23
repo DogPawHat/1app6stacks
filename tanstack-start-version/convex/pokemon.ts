@@ -1,165 +1,148 @@
-import { mutation, query } from "./_generated/server";
+import { Randomize } from "@convex-dev/aggregate";
+import { components, internal } from "./_generated/api";
+import type { DataModel, Doc, Id } from "./_generated/dataModel";
+import {
+  internalAction,
+  internalMutation,
+  mutation,
+  type MutationCtx,
+  query,
+} from "./_generated/server";
 import { v } from "convex/values";
-import { paginationOptsValidator } from "convex/server";
-import type { Id, Doc } from "./_generated/dataModel";
 
-const MAX_DEX_NUMBER = 1025;
+export const getPair = query({
+  args: { randomSeed: v.number() },
+  handler: async (ctx): Promise<[Doc<"pokemon">, Doc<"pokemon">]> => {
+    const first = await randomPokemonAggregate.random(ctx);
 
-// Get two pokemon by their dex numbers
-// as convex does caching we don't want the random numbers to be generated inside the query
-export const getTwoPokemon = query({
-  args: {
-    dexNumber1: v.number(),
-    dexNumber2: v.number(),
-  },
-  handler: async (ctx, args) => {
-    const pokemon = [
-      ctx.db
-        .query("pokemon")
-        .withIndex("dexNumber", (q) => q.eq("dexNumber", args.dexNumber1))
-        .unique(),
-      ctx.db
-        .query("pokemon")
-        .withIndex("dexNumber", (q) => q.eq("dexNumber", args.dexNumber2))
-        .unique(),
-    ] as const;
-
-    const resolvedPokemon = await Promise.all(pokemon);
-
-    if (resolvedPokemon.some((p) => p === null)) {
-      throw new Error(
-        `Pokemon not found: ${[args.dexNumber1, args.dexNumber2].join(", ")}`
-      );
+    let second = first;
+    while (second === first) {
+      second = await randomPokemonAggregate.random(ctx);
     }
-
-    return resolvedPokemon as [
-      NonNullable<(typeof resolvedPokemon)[0]>,
-      NonNullable<(typeof resolvedPokemon)[1]>,
-    ];
+    return [(await ctx.db.get(first!))!, (await ctx.db.get(second!))!];
   },
 });
 
-// Get two random pokemon
-export const getTwoRandomPokemon = query({
-  args: {},
+export const vote = mutation({
+  args: { voteFor: v.id("pokemon"), voteAgainst: v.id("pokemon") },
   handler: async (ctx, args) => {
-    const red = Math.floor(Math.random() * MAX_DEX_NUMBER) + 1;
-    let blue;
-    do {
-      blue = Math.floor(Math.random() * MAX_DEX_NUMBER) + 1;
-    } while (blue === red); 
-
-    const pokemon = [
-      ctx.db
-        .query("pokemon")
-        .withIndex("dexNumber", (q) => q.eq("dexNumber", red))
-        .unique(),
-      ctx.db
-        .query("pokemon")
-        .withIndex("dexNumber", (q) => q.eq("dexNumber", blue))
-        .unique(),
-    ] as const;
-
-    const resolvedPokemon = await Promise.all(pokemon);
-
-    if (resolvedPokemon.some((p) => p === null)) {
-      throw new Error(
-        `Pokemon not found: ${[red, blue].join(", ")}`
-      );
-    }
-
-    return resolvedPokemon as [
-      NonNullable<(typeof resolvedPokemon)[0]>,
-      NonNullable<(typeof resolvedPokemon)[1]>,
-    ];
+    const id = await ctx.db.insert("votes", {
+      votedForId: args.voteFor,
+      votedAgainstId: args.voteAgainst,
+    });
+    await updateTally(ctx, args.voteFor, true);
+    await updateTally(ctx, args.voteAgainst, false);
   },
 });
 
+async function updateTally(
+  ctx: MutationCtx,
+  pokemonId: Id<"pokemon">,
+  win: boolean,
+) {
+  const pokemon = await ctx.db.get(pokemonId);
+  let tallyOverrides = pokemon!.tally;
+  if (win) {
+    tallyOverrides.upVotes++;
+  } else {
+    tallyOverrides.downVotes++;
+  }
+  tallyOverrides.winPercentage =
+    (tallyOverrides.upVotes /
+      (tallyOverrides.upVotes + tallyOverrides.downVotes)) *
+    100;
+  await ctx.db.patch(pokemonId, {
+    tally: tallyOverrides,
+  });
+}
 
-export const getRankings = query({
-  args: {},
+export const results = query({
+  handler: async (ctx) => {
+    return ctx.db
+      .query("pokemon")
+      .withIndex("by_tally")
+      .order("desc")
+      .collect();
+  },
+});
+
+const randomPokemonAggregate = new Randomize<DataModel, "pokemon">(
+  components.randomPokemonAggregate,
+);
+
+//////  INIT STUFF BELOW
+export const addPokemon = internalMutation({
+  args: { pokemon: v.array(v.object({ name: v.string(), dexId: v.number() })) },
   handler: async (ctx, args) => {
-    const pokemonPaginatedList = await ctx.db.query("pokemon").collect();
+    for (const p of args.pokemon) {
+      const id = await ctx.db.insert("pokemon", {
+        name: p.name,
+        dexId: p.dexId,
+        tally: { winPercentage: 0, upVotes: 0, downVotes: 0 },
+      });
+      await randomPokemonAggregate.insert(ctx, id);
+    }
+  },
+});
 
-    const winMap = new Map<Id<"pokemon">, Doc<"votes">[]>();
-    const lossMap = new Map<Id<"pokemon">, Doc<"votes">[]>();
-    const winKeys = pokemonPaginatedList.flatMap(async (p) => {
-      const wins = await ctx.db
-        .query("votes")
-        .withIndex("votedFor", (q) => q.eq("votedFor", p._id))
-        .collect();
+// Just run this in the Convex dashboard.
+export const initDatabase = internalAction({
+  args: {},
+  handler: async (ctx) => {
+    const allPokemon = await getAllPokemon();
 
-      winMap.set(p._id, wins);
-    });
-    const lossKeys = pokemonPaginatedList.flatMap(async (p) => {
-      const losses = await ctx.db
-        .query("votes")
-        .withIndex("votedAgainst", (q) => q.eq("votedAgainst", p._id))
-        .collect();
+    const formattedPokemon = allPokemon.map((p) => ({
+      dexId: p.dexNumber,
+      name: p.name,
+    }));
 
-      lossMap.set(p._id, losses);
-    });
+    for (let i = 0; i < formattedPokemon.length; i += 100) {
+      const batch = formattedPokemon.slice(i, i + 100);
+      await ctx.runMutation(internal.pokemon.addPokemon, {
+        pokemon: batch,
+      });
+    }
+  },
+});
 
-    await Promise.all([Promise.all(winKeys), Promise.all(lossKeys)]);
+/**
+ * Fetches all Pokemon from Gen 1-9 (up to #1025) from the PokeAPI GraphQL endpoint.
+ * Each Pokemon includes their name, Pokedex number, and sprite URL.
+ * Results are cached indefinitely using Next.js cache.
+ */
+async function getAllPokemon() {
+  // Use the graphql endpoint because the normal one won't let you get names
+  // in a single query
+  const query = `
+    query GetAllPokemon {
+      pokemon_v2_pokemon(where: {id: {_lte: 1025}}) {
+        id
+        pokemon_v2_pokemonspecy {
+          name
+        }
+      }
+    }
+  `;
 
-    const stats = pokemonPaginatedList.map((pokemon, index) => {
-      const totalWins = winMap.get(pokemon._id)?.length ?? 0;
-      const totalLosses = lossMap.get(pokemon._id)?.length ?? 0;
-      const totalBattles = totalWins + totalLosses;
+  const response = await fetch("https://beta.pokeapi.co/graphql/v1beta", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ query }),
+  });
 
-      return {
-        ...pokemon,
-        stats: {
-          wins: totalWins,
-          losses: totalLosses,
-          winRate: totalBattles > 0 ? totalWins / totalBattles : 0,
-        },
+  const data = (await response.json()).data as {
+    pokemon_v2_pokemon: {
+      id: number;
+      pokemon_v2_pokemonspecy: {
+        name: string;
       };
-    });
-    return stats.sort((a, b) => {
-      const winRateDiff = b.stats.winRate - a.stats.winRate;
-      if (winRateDiff !== 0) return winRateDiff;
-      return b.stats.wins - a.stats.wins;
-    });
-  },
-});
+    }[];
+  };
 
-export const recordBattle = mutation({
-  args: {
-    winnerId: v.id("pokemon"),
-    loserId: v.id("pokemon"),
-  },
-  handler: async (ctx, args) => {
-    const pokemon = [
-      ctx.db.get(args.winnerId),
-      ctx.db.get(args.loserId),
-    ] as const;
-
-    const [winner, loser] = await Promise.all(pokemon);
-
-    if (!winner || !loser) {
-      throw new Error("Pokemon not found");
-    }
-
-    return await ctx.db.insert("votes", {
-      votedFor: winner._id,
-      votedAgainst: loser._id,
-    });
-  },
-});
-
-export const batchCreate = mutation({
-  args: {
-    pokemon: v.array(
-      v.object({
-        dexNumber: v.number(),
-        name: v.string(),
-      })
-    ),
-  },
-  handler: async (ctx, args) => {
-    for (const pokemon of args.pokemon) {
-      await ctx.db.insert("pokemon", pokemon);
-    }
-  },
-});
+  return data.pokemon_v2_pokemon.map((pokemon) => ({
+    name: pokemon.pokemon_v2_pokemonspecy.name,
+    dexNumber: pokemon.id,
+  }));
+}

@@ -8,10 +8,11 @@ import {
 import { Meta, Scripts } from "@tanstack/start";
 import type { ReactNode } from "react";
 import appCss from "~/styles/app.css?url";
-import { createStore } from "jotai";
+import type { createPokemonSeedStore } from "~/utils/seed-store";
+
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
-  jotaiStore: ReturnType<typeof createStore>;
+  pokemonSeedStore: ReturnType<typeof createPokemonSeedStore>;
 }>()({
   head: () => {
     return {
