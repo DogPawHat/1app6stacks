@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { Suspense } from "react";
 import PokemonSprite from "@/utils/pokemon-sprite";
 import VoteFallback from "@/utils/vote-fallback";
+import { VoteButton } from "@/utils/vote-button";
 
 async function VoteContent() {
   const twoPokemon = await getTwoRandomPokemon();
@@ -20,8 +21,10 @@ async function VoteContent() {
             <span className="text-gray-500 text-lg">#{pokemon.dexNumber}</span>
             <h2 className="text-2xl font-bold capitalize">{pokemon.name}</h2>
             <form className="mt-4">
-              <button
-                formAction={async () => {
+              <VoteButton
+                winnerDexNumber={pokemon.dexNumber}
+                loserDexNumber={twoPokemon[index === 0 ? 1 : 0].dexNumber}
+                voteAction={async () => {
                   "use server";
                   console.log("voted for", pokemon.name);
 
@@ -30,10 +33,7 @@ async function VoteContent() {
                   recordBattle(pokemon.dexNumber, loser.dexNumber);
                   revalidatePath("/");
                 }}
-                className="px-8 py-3 bg-blue-500 text-white rounded-lg text-lg font-semibold hover:bg-blue-600 transition-colors"
-              >
-                Vote
-              </button>
+              />
             </form>
           </div>
         </div>
