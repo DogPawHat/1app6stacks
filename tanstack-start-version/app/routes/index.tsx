@@ -21,11 +21,14 @@ function VoteContent() {
     convexQuery(api.pokemon.getPair, { randomSeed: pokemonSeed })
   );
 
-  // const updateSeed = useUpdatePokemonSeed();
-
-  const { mutate: vote } = useMutation({
+  const { mutate: vote, isPending: votePending } = useMutation({
     mutationFn: useConvexMutation(api.pokemon.vote),
   });
+
+  if (votePending) {
+    // lol lmao
+    throw new Promise(() => {});
+  }
 
   return (
     <div className="flex justify-center gap-16 items-center min-h-[80vh]">
@@ -37,12 +40,13 @@ function VoteContent() {
             <h2 className="text-2xl font-bold capitalize">{pokemon.name}</h2>
             <button
               type="button"
-              onClick={() =>
+              onMouseDown={() =>
                 vote({
                   voteFor: pokemon._id,
                   voteAgainst: twoPokemon[index === 0 ? 1 : 0]._id,
                 })
               }
+              disabled={votePending}
               className="px-8 py-3 bg-blue-500 text-white rounded-lg text-lg font-semibold hover:bg-blue-600 transition-colors"
             >
               Vote
