@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import * as React from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useConvexMutation } from "@convex-dev/react-query";
 import { useMutation } from "@tanstack/react-query";
@@ -24,11 +24,6 @@ function VoteContent() {
   const { mutate: vote, isPending: votePending } = useMutation({
     mutationFn: useConvexMutation(api.pokemon.vote),
   });
-
-  if (votePending) {
-    // lol lmao
-    throw new Promise(() => {});
-  }
 
   return (
     <div className="flex justify-center gap-16 items-center min-h-[80vh]">
@@ -61,9 +56,9 @@ function VoteContent() {
 function VoteComponent({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex justify-center gap-16 items-center min-h-[80vh]">
-      <Suspense fallback={<VoteFallback />}>
+      <React.Suspense fallback={<VoteFallback />}>
         <VoteContent />
-      </Suspense>
+      </React.Suspense>
     </div>
   );
 }
