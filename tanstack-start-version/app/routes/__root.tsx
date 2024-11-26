@@ -60,9 +60,9 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
               </Link>
             </div>
             <nav className="flex flex-row items-center gap-8">
-              {/* <Link href="/turbo" className="hover:underline text-lg">
+              <Link href="/turbo" className="hover:underline text-lg">
                 Turbo Version
-              </Link> */}
+              </Link>
               <Link href="/results" className="hover:underline text-lg">
                 Results
               </Link>

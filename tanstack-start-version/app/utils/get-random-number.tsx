@@ -14,3 +14,11 @@ export const getRandomNumberQueryOptions = () => {
     staleTime: Infinity,
   });
 };
+
+export const getTurboRandomNumberQueryOptions = () => {
+  return queryOptions({
+    queryKey: ["1app6stacks__tanstack-start-version","getTurboRandomNumberFromServer"],
+    queryFn: () => getServerRandomNumber(),
+    staleTime: Infinity,
+  });
+};

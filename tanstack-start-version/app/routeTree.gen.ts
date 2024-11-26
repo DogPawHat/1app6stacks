@@ -11,10 +11,17 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as TurboImport } from './routes/turbo'
 import { Route as ResultsImport } from './routes/results'
 import { Route as IndexImport } from './routes/index'
 
 // Create/Update Routes
+
+const TurboRoute = TurboImport.update({
+  id: '/turbo',
+  path: '/turbo',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const ResultsRoute = ResultsImport.update({
   id: '/results',
@@ -46,6 +53,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResultsImport
       parentRoute: typeof rootRoute
     }
+    '/turbo': {
+      id: '/turbo'
+      path: '/turbo'
+      fullPath: '/turbo'
+      preLoaderRoute: typeof TurboImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -54,36 +68,41 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/results': typeof ResultsRoute
+  '/turbo': typeof TurboRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/results': typeof ResultsRoute
+  '/turbo': typeof TurboRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/results': typeof ResultsRoute
+  '/turbo': typeof TurboRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/results'
+  fullPaths: '/' | '/results' | '/turbo'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/results'
-  id: '__root__' | '/' | '/results'
+  to: '/' | '/results' | '/turbo'
+  id: '__root__' | '/' | '/results' | '/turbo'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ResultsRoute: typeof ResultsRoute
+  TurboRoute: typeof TurboRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ResultsRoute: ResultsRoute,
+  TurboRoute: TurboRoute,
 }
 
 export const routeTree = rootRoute
@@ -97,7 +116,8 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/results"
+        "/results",
+        "/turbo"
       ]
     },
     "/": {
@@ -105,6 +125,9 @@ export const routeTree = rootRoute
     },
     "/results": {
       "filePath": "results.tsx"
+    },
+    "/turbo": {
+      "filePath": "turbo.tsx"
     }
   }
 }
