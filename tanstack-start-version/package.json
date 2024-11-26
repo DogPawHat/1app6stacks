@@ -9,7 +9,7 @@
     "start": "vinxi start"
   },
   "dependencies": {
-    "@convex-dev/aggregate": "0.1.16",
+    "@convex-dev/aggregate": "^0.1.17",
     "@convex-dev/react-query": "0.0.0-alpha.8",
     "@tanstack/react-query": "^5.61.4",
     "@tanstack/react-router": "^1.82.12",

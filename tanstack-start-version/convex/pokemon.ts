@@ -1,4 +1,4 @@
-import { Randomize } from "@convex-dev/aggregate";
+import { TableAggregate } from "@convex-dev/aggregate";
 import { components, internal } from "./_generated/api";
 import type { DataModel, Doc, Id } from "./_generated/dataModel";
 import {
@@ -10,7 +10,6 @@ import {
   query,
 } from "./_generated/server";
 import { v } from "convex/values";
-
 
 export const getPair = internalQuery({
   args: { pokemon1: v.id("pokemon"), pokemon2: v.id("pokemon") },
@@ -43,7 +42,7 @@ export const getRandomPair = query({
     while (second === first) {
       second = await randomPokemonAggregate.random(ctx);
     }
-    return getPair(ctx, { pokemon1: first!, pokemon2: second! });
+    return getPair(ctx, { pokemon1: first!.id, pokemon2: second!.id });
   },
 });
 
@@ -90,8 +89,16 @@ export const results = query({
   },
 });
 
-const randomPokemonAggregate = new Randomize<DataModel, "pokemon">(
-  components.randomPokemonAggregate,
+const randomPokemonAggregate = new TableAggregate<{
+  DataModel: DataModel,
+  TableName: "pokemon",
+  Namespace: undefined,
+  Key: null,
+}>(
+  components.randomPokemonAggregate, {
+    namespace: () => undefined,
+    sortKey: () => null,
+  }
 );
 
 //////  INIT STUFF BELOW
