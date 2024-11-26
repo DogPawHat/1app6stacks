@@ -8,7 +8,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 
 import VoteFallback from "~/utils/vote-fallback";
 import { PokemonSprite } from "~/utils/sprite";
-import { getRandomNumberQueryOptions } from "~/utils/get-random-number";
+import { getRandomNumberQueryOptions } from "~/sdk/query-options";
 
 export const Route = createFileRoute("/")({
   component: VoteComponent,

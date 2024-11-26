@@ -1,13 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { redirect } from "@tanstack/react-router";
-import { getFreshTurboRandomPokemonPair } from "~/utils/get-random-number";
+import { setServerFreshTurboRandomPokemonPair } from "~/sdk/turbo/set-fresh-pokemon-pair";
 import { convexQuery } from "@convex-dev/react-query";
 import VoteFallback from "~/utils/vote-fallback";
 import { api } from "../../convex/_generated/api";
 
 export const Route = createFileRoute("/turbo/")({
   loader: async ({ context }) => {
-    const newPair = await getFreshTurboRandomPokemonPair();
+    const newPair = await setServerFreshTurboRandomPokemonPair();
     console.log("newPair", newPair);
     context.queryClient.setQueryData(
       convexQuery(api.pokemon.getPairByDexIds, {

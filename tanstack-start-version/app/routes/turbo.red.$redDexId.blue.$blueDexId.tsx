@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useConvexMutation } from "@convex-dev/react-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { useServerFn } from "@tanstack/start";
@@ -8,10 +7,9 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { api } from "../../convex/_generated/api";
 import VoteFallback from "~/utils/vote-fallback";
 import { PokemonSprite } from "~/utils/sprite";
-import {
-  handleServerVote,
-  getServerNextTurboRandomPokemonPair,
-} from "~/utils/get-random-number";
+import { recordServerVote } from "~/sdk/turbo/record-vote";
+import { setServerNextTurboRandomPokemonPair } from "~/sdk/turbo/set-next-pokemon-pair";
+import type { Id } from "../../convex/_generated/dataModel";
 
 export const Route = createFileRoute("/turbo/red/$redDexId/blue/$blueDexId")({
   pendingComponent: VoteFallback,
@@ -25,7 +23,7 @@ export const Route = createFileRoute("/turbo/red/$redDexId/blue/$blueDexId")({
       ),
       (async () => {
         if (preload === false) {
-          const getNextPairAndSeed = await getServerNextTurboRandomPokemonPair({
+          const getNextPairAndSeed = await setServerNextTurboRandomPokemonPair({
             data: {
               currentPair: [
                 parseInt(params.redDexId, 10),
@@ -50,8 +48,8 @@ export const Route = createFileRoute("/turbo/red/$redDexId/blue/$blueDexId")({
 function TurboVoteContent() {
   const navigate = Route.useNavigate();
   const { redDexId, blueDexId } = Route.useParams();
-  const handleVote = useServerFn(handleServerVote);
   const queryClient = useQueryClient();
+  const recordVote = useServerFn(recordServerVote);
   const { data: twoPokemon } = useSuspenseQuery(
     convexQuery(api.pokemon.getPairByDexIds, {
       redDexId: parseInt(redDexId, 10),
@@ -59,8 +57,14 @@ function TurboVoteContent() {
     })
   );
 
-  const { mutate: vote, isPending: votePending } = useMutation({
-    mutationFn: handleVote,
+  const { mutate: handleRecordVote, isPending: votePending } = useMutation({
+    mutationFn: ({
+      winner,
+      loser,
+    }: {
+      winner: Id<"pokemon">;
+      loser: Id<"pokemon">;
+    }) => recordVote({ data: { winner, loser } }),
     onSuccess: (data) => {
       queryClient.setQueryData(
         convexQuery(api.pokemon.getPairByDexIds, {
@@ -90,11 +94,9 @@ function TurboVoteContent() {
             <button
               type="button"
               onMouseDown={() =>
-                vote({
-                  data: { 
-                    winner: pokemon._id,
-                    loser: twoPokemon[index === 0 ? 1 : 0]._id,
-                  },
+                handleRecordVote({
+                  winner: pokemon._id,
+                  loser: twoPokemon[index === 0 ? 1 : 0]._id,
                 })
               }
               disabled={votePending}
