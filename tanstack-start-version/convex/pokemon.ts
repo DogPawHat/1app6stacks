@@ -4,13 +4,37 @@ import type { DataModel, Doc, Id } from "./_generated/dataModel";
 import {
   internalAction,
   internalMutation,
+  internalQuery,
   mutation,
   type MutationCtx,
   query,
 } from "./_generated/server";
 import { v } from "convex/values";
 
-export const getPair = query({
+
+export const getPair = internalQuery({
+  args: { pokemon1: v.id("pokemon"), pokemon2: v.id("pokemon") },
+  handler: async (ctx, args): Promise<[Doc<"pokemon">, Doc<"pokemon">]> => {
+    return [
+      (await ctx.db.get(args.pokemon1))!,
+      (await ctx.db.get(args.pokemon2))!,
+    ];
+  },
+});
+
+export const getPairByDexIds = query({
+  args: { redDexId: v.number(), blueDexId: v.number() },
+  handler: async (ctx, args): Promise<[Doc<"pokemon">, Doc<"pokemon">]> => {
+    const pair = [
+      (await ctx.db.query("pokemon").withIndex('by_dex_id', q => q.eq('dexId', args.redDexId)).first())!,
+      (await ctx.db.query("pokemon").withIndex('by_dex_id', q => q.eq('dexId', args.blueDexId)).first())!,
+    ]
+
+    return getPair(ctx, { pokemon1: pair[0]!._id, pokemon2: pair[1]!._id });
+  },
+});
+
+export const getRandomPair = query({
   args: { randomSeed: v.number() },
   handler: async (ctx): Promise<[Doc<"pokemon">, Doc<"pokemon">]> => {
     const first = await randomPokemonAggregate.random(ctx);
@@ -19,7 +43,7 @@ export const getPair = query({
     while (second === first) {
       second = await randomPokemonAggregate.random(ctx);
     }
-    return [(await ctx.db.get(first!))!, (await ctx.db.get(second!))!];
+    return getPair(ctx, { pokemon1: first!, pokemon2: second! });
   },
 });
 

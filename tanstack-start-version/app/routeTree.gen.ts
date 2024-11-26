@@ -14,6 +14,8 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as TurboImport } from './routes/turbo'
 import { Route as ResultsImport } from './routes/results'
 import { Route as IndexImport } from './routes/index'
+import { Route as TurboIndexImport } from './routes/turbo.index'
+import { Route as TurboRedRedDexIdBlueBlueDexIdImport } from './routes/turbo.red.$redDexId.blue.$blueDexId'
 
 // Create/Update Routes
 
@@ -34,6 +36,19 @@ const IndexRoute = IndexImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any)
+
+const TurboIndexRoute = TurboIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => TurboRoute,
+} as any)
+
+const TurboRedRedDexIdBlueBlueDexIdRoute =
+  TurboRedRedDexIdBlueBlueDexIdImport.update({
+    id: '/red/$redDexId/blue/$blueDexId',
+    path: '/red/$redDexId/blue/$blueDexId',
+    getParentRoute: () => TurboRoute,
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -60,49 +75,91 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TurboImport
       parentRoute: typeof rootRoute
     }
+    '/turbo/': {
+      id: '/turbo/'
+      path: '/'
+      fullPath: '/turbo/'
+      preLoaderRoute: typeof TurboIndexImport
+      parentRoute: typeof TurboImport
+    }
+    '/turbo/red/$redDexId/blue/$blueDexId': {
+      id: '/turbo/red/$redDexId/blue/$blueDexId'
+      path: '/red/$redDexId/blue/$blueDexId'
+      fullPath: '/turbo/red/$redDexId/blue/$blueDexId'
+      preLoaderRoute: typeof TurboRedRedDexIdBlueBlueDexIdImport
+      parentRoute: typeof TurboImport
+    }
   }
 }
 
 // Create and export the route tree
 
+interface TurboRouteChildren {
+  TurboIndexRoute: typeof TurboIndexRoute
+  TurboRedRedDexIdBlueBlueDexIdRoute: typeof TurboRedRedDexIdBlueBlueDexIdRoute
+}
+
+const TurboRouteChildren: TurboRouteChildren = {
+  TurboIndexRoute: TurboIndexRoute,
+  TurboRedRedDexIdBlueBlueDexIdRoute: TurboRedRedDexIdBlueBlueDexIdRoute,
+}
+
+const TurboRouteWithChildren = TurboRoute._addFileChildren(TurboRouteChildren)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/results': typeof ResultsRoute
-  '/turbo': typeof TurboRoute
+  '/turbo': typeof TurboRouteWithChildren
+  '/turbo/': typeof TurboIndexRoute
+  '/turbo/red/$redDexId/blue/$blueDexId': typeof TurboRedRedDexIdBlueBlueDexIdRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/results': typeof ResultsRoute
-  '/turbo': typeof TurboRoute
+  '/turbo': typeof TurboIndexRoute
+  '/turbo/red/$redDexId/blue/$blueDexId': typeof TurboRedRedDexIdBlueBlueDexIdRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/results': typeof ResultsRoute
-  '/turbo': typeof TurboRoute
+  '/turbo': typeof TurboRouteWithChildren
+  '/turbo/': typeof TurboIndexRoute
+  '/turbo/red/$redDexId/blue/$blueDexId': typeof TurboRedRedDexIdBlueBlueDexIdRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/results' | '/turbo'
+  fullPaths:
+    | '/'
+    | '/results'
+    | '/turbo'
+    | '/turbo/'
+    | '/turbo/red/$redDexId/blue/$blueDexId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/results' | '/turbo'
-  id: '__root__' | '/' | '/results' | '/turbo'
+  to: '/' | '/results' | '/turbo' | '/turbo/red/$redDexId/blue/$blueDexId'
+  id:
+    | '__root__'
+    | '/'
+    | '/results'
+    | '/turbo'
+    | '/turbo/'
+    | '/turbo/red/$redDexId/blue/$blueDexId'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ResultsRoute: typeof ResultsRoute
-  TurboRoute: typeof TurboRoute
+  TurboRoute: typeof TurboRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ResultsRoute: ResultsRoute,
-  TurboRoute: TurboRoute,
+  TurboRoute: TurboRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -127,7 +184,19 @@ export const routeTree = rootRoute
       "filePath": "results.tsx"
     },
     "/turbo": {
-      "filePath": "turbo.tsx"
+      "filePath": "turbo.tsx",
+      "children": [
+        "/turbo/",
+        "/turbo/red/$redDexId/blue/$blueDexId"
+      ]
+    },
+    "/turbo/": {
+      "filePath": "turbo.index.tsx",
+      "parent": "/turbo"
+    },
+    "/turbo/red/$redDexId/blue/$blueDexId": {
+      "filePath": "turbo.red.$redDexId.blue.$blueDexId.tsx",
+      "parent": "/turbo"
     }
   }
 }

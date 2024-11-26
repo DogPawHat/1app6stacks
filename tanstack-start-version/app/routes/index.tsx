@@ -18,7 +18,7 @@ function VoteContent() {
   const { data: pokemonSeed } = useSuspenseQuery(getRandomNumberQueryOptions());
 
   const { data: twoPokemon } = useSuspenseQuery(
-    convexQuery(api.pokemon.getPair, { randomSeed: pokemonSeed })
+    convexQuery(api.pokemon.getRandomPair, { randomSeed: pokemonSeed })
   );
 
   const { mutate: vote, isPending: votePending } = useMutation({

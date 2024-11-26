@@ -10,7 +10,7 @@ export default defineSchema({
       upVotes: v.number(),
       downVotes: v.number(),
     }),
-  }).index("by_tally", ["tally.winPercentage", "tally.upVotes"]),
+  }).index("by_tally", ["tally.winPercentage", "tally.upVotes"]).index("by_dex_id", ["dexId"]),
   votes: defineTable({
     votedForId: v.id("pokemon"),
     votedAgainstId: v.id("pokemon"),
