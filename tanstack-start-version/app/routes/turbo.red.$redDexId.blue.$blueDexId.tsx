@@ -10,9 +10,9 @@ import { PokemonSprite } from "~/utils/sprite";
 import { recordServerVote } from "~/sdk/turbo/record-vote";
 import { setServerNextTurboRandomPokemonPair } from "~/sdk/turbo/set-next-pokemon-pair";
 import type { Id } from "../../convex/_generated/dataModel";
+import React from "react";
 
 export const Route = createFileRoute("/turbo/red/$redDexId/blue/$blueDexId")({
-  pendingComponent: VoteFallback,
   loader: async ({ params, context, preload }) => {
     void Promise.allSettled([
       context.queryClient.prefetchQuery(
@@ -42,21 +42,12 @@ export const Route = createFileRoute("/turbo/red/$redDexId/blue/$blueDexId")({
       })(),
     ]);
   },
-  component: TurboVoteContent,
+  component: TurboVote,
 });
 
-function TurboVoteContent() {
+function TurboVote() {
   const navigate = Route.useNavigate();
-  const { redDexId, blueDexId } = Route.useParams();
   const queryClient = useQueryClient();
-  const recordVote = useServerFn(recordServerVote);
-  const { data: twoPokemon } = useSuspenseQuery(
-    convexQuery(api.pokemon.getPairByDexIds, {
-      redDexId: parseInt(redDexId, 10),
-      blueDexId: parseInt(blueDexId, 10),
-    }),
-  );
-
   const { mutate: handleRecordVote, isPending: votePending } = useMutation({
     mutationFn: ({
       winner,
@@ -64,7 +55,7 @@ function TurboVoteContent() {
     }: {
       winner: Id<"pokemon">;
       loser: Id<"pokemon">;
-    }) => recordVote({ data: { winner, loser } }),
+    }) => recordServerVote({ data: { winner, loser } }),
     onSuccess: (data) => {
       queryClient.setQueryData(
         convexQuery(api.pokemon.getPairByDexIds, {
@@ -82,6 +73,36 @@ function TurboVoteContent() {
       });
     },
   });
+
+  return (
+    <React.Suspense fallback={<VoteFallback />}>
+      <TurboVoteContent
+        handleRecordVote={handleRecordVote}
+        votePending={votePending}
+      />
+    </React.Suspense>
+  );
+}
+
+function TurboVoteContent({
+  handleRecordVote,
+  votePending,
+}: {
+  handleRecordVote: (data: { winner: Id<"pokemon">; loser: Id<"pokemon"> }) => void;
+  votePending: boolean;
+}) {
+  const { redDexId, blueDexId } = Route.useParams();
+
+  const { data: twoPokemon } = useSuspenseQuery(
+    convexQuery(api.pokemon.getPairByDexIds, {
+      redDexId: parseInt(redDexId, 10),
+      blueDexId: parseInt(blueDexId, 10),
+    }),
+  );
+
+  if (votePending) {
+    return <VoteFallback />;
+  }
 
   return (
     <div className="flex justify-center gap-16 items-center min-h-[80vh]">

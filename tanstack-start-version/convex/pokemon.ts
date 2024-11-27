@@ -49,7 +49,7 @@ export const getRandomPair = query({
 export const vote = mutation({
   args: { voteFor: v.id("pokemon"), voteAgainst: v.id("pokemon") },
   handler: async (ctx, args) => {
-    const id = await ctx.db.insert("votes", {
+    const _id = await ctx.db.insert("votes", {
       votedForId: args.voteFor,
       votedAgainstId: args.voteAgainst,
     });
