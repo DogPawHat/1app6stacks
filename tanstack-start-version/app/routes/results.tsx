@@ -7,7 +7,7 @@ import { PokemonSprite } from "~/utils/sprite";
 export const Route = createFileRoute("/results")({
   loader: async ({ context }) => {
     await context.queryClient.ensureQueryData(
-      convexQuery(api.pokemon.results, {})
+      convexQuery(api.pokemon.results, {}),
     );
   },
   pendingComponent: () => (
@@ -53,7 +53,7 @@ function ResultsRouteComponent() {
 
 function Results() {
   const { data: rankings } = useSuspenseQuery(
-    convexQuery(api.pokemon.results, {})
+    convexQuery(api.pokemon.results, {}),
   );
 
   return (
@@ -75,7 +75,7 @@ function Results() {
 
           <div className="text-right">
             <div className="text-2xl font-bold text-blue-400">
-              {(pokemon.tally.winPercentage).toFixed(1)}%
+              {pokemon.tally.winPercentage.toFixed(1)}%
             </div>
             <div className="text-sm text-gray-400">
               {pokemon.tally.upVotes}W - {pokemon.tally.downVotes}L
@@ -86,5 +86,3 @@ function Results() {
     </div>
   );
 }
-
-export default function ResultsPage() {}

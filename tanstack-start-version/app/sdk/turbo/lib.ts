@@ -1,6 +1,6 @@
 import { getTwoRandomPokemon } from "~/sdk/lib";
 import { setCookie } from "vinxi/http";
-
+import { env } from "~/env";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
@@ -12,10 +12,8 @@ export async function getNextPairAndSeed() {
 }
 
 export async function recordVote(winner: string, loser: string) {
-  const CONVEX_URL = (import.meta as any).env.VITE_CONVEX_URL!;
-  if (!CONVEX_URL) {
-    console.error("missing envar VITE_CONVEX_URL");
-  }
+  const CONVEX_URL = env.VITE_CONVEX_URL!;
+
   const convexClient = new ConvexHttpClient(CONVEX_URL);
   await convexClient.mutation(api.pokemon.vote, {
     voteFor: winner as Id<"pokemon">,

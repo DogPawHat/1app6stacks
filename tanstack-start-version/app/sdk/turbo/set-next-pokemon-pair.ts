@@ -12,7 +12,7 @@ export const setServerNextTurboRandomPokemonPair = createServerFn({
   .validator(
     z.object({
       currentPair: z.tuple([z.number(), z.number()]),
-    })
+    }),
   )
   .handler(async ({ data: { currentPair } }) => {
     const nextPairAndSeedCookie = getCookie("nextPairAndSeed");
@@ -22,7 +22,7 @@ export const setServerNextTurboRandomPokemonPair = createServerFn({
     }
 
     const nextPairAndSeed = pokemonPairAndSeedSchema.parse(
-      JSON.parse(nextPairAndSeedCookie)
+      JSON.parse(nextPairAndSeedCookie),
     );
 
     if (

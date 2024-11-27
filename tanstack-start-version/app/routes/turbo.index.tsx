@@ -14,7 +14,7 @@ export const Route = createFileRoute("/turbo/")({
         redDexId: newPair.pair[0].dexId,
         blueDexId: newPair.pair[1].dexId,
       }).queryKey,
-      newPair.pair
+      newPair.pair,
     );
     throw redirect({
       to: "/turbo/red/$redDexId/blue/$blueDexId",

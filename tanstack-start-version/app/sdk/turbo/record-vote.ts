@@ -4,7 +4,6 @@ import { getCookie } from "vinxi/http";
 import { voteSchema, pokemonPairAndSeedSchema } from "~/sdk/lib";
 import { getNextPairAndSeed, recordVote } from "./lib";
 
-
 export const recordServerVote = createServerFn({
   method: "POST",
 })

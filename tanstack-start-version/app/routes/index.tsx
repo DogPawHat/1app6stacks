@@ -18,7 +18,7 @@ function VoteContent() {
   const { data: pokemonSeed } = useSuspenseQuery(getRandomNumberQueryOptions());
 
   const { data: twoPokemon } = useSuspenseQuery(
-    convexQuery(api.pokemon.getRandomPair, { randomSeed: pokemonSeed })
+    convexQuery(api.pokemon.getRandomPair, { randomSeed: pokemonSeed }),
   );
 
   const { mutate: vote, isPending: votePending } = useMutation({
@@ -53,7 +53,7 @@ function VoteContent() {
   );
 }
 
-function VoteComponent({ children }: { children: React.ReactNode }) {
+function VoteComponent() {
   return (
     <div className="flex justify-center gap-16 items-center min-h-[80vh]">
       <React.Suspense fallback={<VoteFallback />}>

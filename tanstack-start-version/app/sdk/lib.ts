@@ -1,7 +1,7 @@
-import { queryOptions } from "@tanstack/react-query";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "../../convex/_generated/api";
 import { z } from "zod";
+import { env } from "../env";
 
 const pokemonSchema = z.object({
   _id: z.string(),
@@ -22,10 +22,7 @@ export const voteSchema = z.object({
 });
 
 export async function getTwoRandomPokemon() {
-  const CONVEX_URL = (import.meta as any).env.VITE_CONVEX_URL!;
-  if (!CONVEX_URL) {
-    console.error("missing envar VITE_CONVEX_URL");
-  }
+  const CONVEX_URL = env.VITE_CONVEX_URL;
   const convexClient = new ConvexHttpClient(CONVEX_URL);
 
   const randomSeed = Math.random();

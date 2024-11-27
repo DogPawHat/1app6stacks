@@ -4,12 +4,9 @@ import { routerWithQueryClient } from "@tanstack/react-router-with-query";
 import { ConvexQueryClient } from "@convex-dev/react-query";
 import { ConvexProvider } from "convex/react";
 import { routeTree } from "./routeTree.gen";
-
+import { env } from "./env";
 export function createRouter() {
-  const CONVEX_URL = (import.meta as any).env.VITE_CONVEX_URL!;
-  if (!CONVEX_URL) {
-    console.error("missing envar VITE_CONVEX_URL");
-  }
+  const CONVEX_URL = env.VITE_CONVEX_URL;
   const convexQueryClient = new ConvexQueryClient(CONVEX_URL);
 
   const queryClient: QueryClient = new QueryClient({
@@ -33,7 +30,7 @@ export function createRouter() {
         </ConvexProvider>
       ),
     }),
-    queryClient
+    queryClient,
   );
 
   return router;

@@ -19,7 +19,7 @@ export const Route = createFileRoute("/turbo/red/$redDexId/blue/$blueDexId")({
         convexQuery(api.pokemon.getPairByDexIds, {
           redDexId: parseInt(params.redDexId, 10),
           blueDexId: parseInt(params.blueDexId, 10),
-        })
+        }),
       ),
       (async () => {
         if (preload === false) {
@@ -36,7 +36,7 @@ export const Route = createFileRoute("/turbo/red/$redDexId/blue/$blueDexId")({
               redDexId: getNextPairAndSeed.pair[0].dexId,
               blueDexId: getNextPairAndSeed.pair[1].dexId,
             }).queryKey,
-            getNextPairAndSeed.pair
+            getNextPairAndSeed.pair,
           );
         }
       })(),
@@ -54,7 +54,7 @@ function TurboVoteContent() {
     convexQuery(api.pokemon.getPairByDexIds, {
       redDexId: parseInt(redDexId, 10),
       blueDexId: parseInt(blueDexId, 10),
-    })
+    }),
   );
 
   const { mutate: handleRecordVote, isPending: votePending } = useMutation({
@@ -71,7 +71,7 @@ function TurboVoteContent() {
           redDexId: data.pair[0].dexId,
           blueDexId: data.pair[1].dexId,
         }).queryKey,
-        data.pair
+        data.pair,
       );
       navigate({
         to: Route.to,
