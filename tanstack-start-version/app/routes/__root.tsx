@@ -1,10 +1,12 @@
-import { QueryClient } from "@tanstack/react-query";
+import type { QueryClient } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import {
   Link,
   Outlet,
   ScrollRestoration,
   createRootRouteWithContext,
 } from "@tanstack/react-router";
+import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { Meta, Scripts } from "@tanstack/start";
 import type { ReactNode } from "react";
 import appCss from "~/styles/app.css?url";
@@ -82,6 +84,8 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
           </a>
         </footer>
         <ScrollRestoration />
+        <ReactQueryDevtools/>
+        <TanStackRouterDevtools />
         <Scripts />
       </body>
     </html>
