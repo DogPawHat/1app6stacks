@@ -6,9 +6,7 @@ import { PokemonSprite } from "~/utils/sprite";
 
 export const Route = createFileRoute("/results")({
   loader: async ({ context }) => {
-    await context.queryClient.ensureQueryData(
-      convexQuery(api.pokemon.results, {}),
-    );
+    context.queryClient.prefetchQuery(convexQuery(api.pokemon.results, {}));
   },
   pendingComponent: () => (
     <ResultsContainerComponent>

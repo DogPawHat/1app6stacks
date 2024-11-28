@@ -7,7 +7,7 @@
     "dev": "vinxi dev",
     "build": "vinxi build",
     "start": "vinxi start",
-    "lint": "eslint app"
+    "lint": "biome lint app"
   },
   "dependencies": {
     "@convex-dev/aggregate": "^0.1.17",

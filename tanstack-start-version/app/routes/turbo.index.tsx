@@ -1,28 +1,15 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { redirect } from "@tanstack/react-router";
-import { setServerFreshTurboRandomPokemonPair } from "~/sdk/turbo/set-fresh-pokemon-pair";
-import { convexQuery } from "@convex-dev/react-query";
-import VoteFallback from "~/utils/vote-fallback";
-import { api } from "../../convex/_generated/api";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { getRandomPokemonPair } from "~/utils/get-random-pokemon-pair";
 
 export const Route = createFileRoute("/turbo/")({
-  loader: async ({ context }) => {
-    const newPair = await setServerFreshTurboRandomPokemonPair();
-    console.log("newPair", newPair);
-    context.queryClient.setQueryData(
-      convexQuery(api.pokemon.getPairByDexIds, {
-        redDexId: newPair.pair[0].dexId,
-        blueDexId: newPair.pair[1].dexId,
-      }).queryKey,
-      newPair.pair,
-    );
+  beforeLoad: () => {
+    const [redDexId, blueDexId] = getRandomPokemonPair(Math.random());
     throw redirect({
-      to: "/turbo/red/$redDexId/blue/$blueDexId",
+      to: "/turbo/battle/red/$redDexId/blue/$blueDexId",
       params: {
-        redDexId: `${newPair.pair[0].dexId}`,
-        blueDexId: `${newPair.pair[1].dexId}`,
+        redDexId: redDexId.toString(),
+        blueDexId: blueDexId.toString(),
       },
     });
   },
-  component: VoteFallback,
 });

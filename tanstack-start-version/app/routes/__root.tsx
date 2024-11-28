@@ -84,7 +84,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
           </a>
         </footer>
         <ScrollRestoration />
-        <ReactQueryDevtools/>
+        <ReactQueryDevtools />
         <TanStackRouterDevtools />
         <Scripts />
       </body>
