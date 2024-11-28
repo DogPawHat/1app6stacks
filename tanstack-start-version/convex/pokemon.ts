@@ -1,6 +1,4 @@
-import { TableAggregate } from "@convex-dev/aggregate";
-import { components, internal } from "./_generated/api";
-import type { DataModel, Doc, Id } from "./_generated/dataModel";
+import type { Doc, Id } from "./_generated/dataModel";
 import {
   internalAction,
   internalMutation,
