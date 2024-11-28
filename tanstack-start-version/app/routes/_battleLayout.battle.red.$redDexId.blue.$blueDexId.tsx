@@ -21,8 +21,8 @@ export const Route = createFileRoute(
       blueDexId: blueDexId.toString(),
     }),
   },
-  loader: ({ context, params }) => {
-    context.queryClient.prefetchQuery(
+  loader: async ({ context, params }) => {
+    await context.queryClient.ensureQueryData(
       convexQuery(api.pokemon.getPairByDexIds, {
         redDexId: params.redDexId,
         blueDexId: params.blueDexId,
