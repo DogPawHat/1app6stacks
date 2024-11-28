@@ -10,6 +10,7 @@ import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { Meta, Scripts } from "@tanstack/start";
 import type { ReactNode } from "react";
 import appCss from "~/styles/app.css?url";
+import { seo } from "~/utils/seo";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -24,9 +25,11 @@ export const Route = createRootRouteWithContext<{
           name: "viewport",
           content: "width=device-width, initial-scale=1",
         },
-        {
-          title: "TanStack Start Starter",
-        },
+        ...seo({
+          title: "Roundest (Tanstack Start + Convex)",
+          description:
+            "A web app for voting on which Pokemon is the most round",
+        }),
       ],
       links: [{ rel: "stylesheet", href: appCss }],
     };
@@ -62,10 +65,10 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
               </Link>
             </div>
             <nav className="flex flex-row items-center gap-8">
-              <Link href="/turbo" className="hover:underline text-lg">
+              <Link to="/turbo" className="hover:underline text-lg">
                 Turbo Version
               </Link>
-              <Link href="/results" className="hover:underline text-lg">
+              <Link to="/results" className="hover:underline text-lg">
                 Results
               </Link>
             </nav>

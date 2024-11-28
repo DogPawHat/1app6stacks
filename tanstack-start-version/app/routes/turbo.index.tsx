@@ -7,8 +7,8 @@ export const Route = createFileRoute("/turbo/")({
     throw redirect({
       to: "/turbo/battle/red/$redDexId/blue/$blueDexId",
       params: {
-        redDexId: redDexId.toString(),
-        blueDexId: blueDexId.toString(),
+        redDexId,
+        blueDexId,
       },
     });
   },

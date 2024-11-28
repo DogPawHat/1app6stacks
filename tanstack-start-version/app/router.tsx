@@ -22,6 +22,7 @@ export function createRouter() {
   const router = routerWithQueryClient(
     createTanStackRouter({
       routeTree,
+      defaultPreload: "intent",
       defaultPreloadStaleTime: 0,
       context: { queryClient },
       Wrap: ({ children }: { children: React.ReactNode }) => (
@@ -30,7 +31,7 @@ export function createRouter() {
         </ConvexProvider>
       ),
     }),
-    queryClient,
+    queryClient
   );
 
   return router;

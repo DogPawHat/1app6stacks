@@ -15,6 +15,7 @@ import { Route as ResultsImport } from './routes/results'
 import { Route as BattleImport } from './routes/battle'
 import { Route as IndexImport } from './routes/index'
 import { Route as TurboIndexImport } from './routes/turbo.index'
+import { Route as ResultsIndexImport } from './routes/results.index'
 import { Route as TurboBattleImport } from './routes/turbo.battle'
 import { Route as BattleRedRedDexIdBlueBlueDexIdImport } from './routes/battle.red.$redDexId.blue.$blueDexId'
 import { Route as TurboBattleRedRedDexIdBlueBlueDexIdImport } from './routes/turbo.battle.red.$redDexId.blue.$blueDexId'
@@ -43,6 +44,12 @@ const TurboIndexRoute = TurboIndexImport.update({
   id: '/turbo/',
   path: '/turbo/',
   getParentRoute: () => rootRoute,
+} as any)
+
+const ResultsIndexRoute = ResultsIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ResultsRoute,
 } as any)
 
 const TurboBattleRoute = TurboBattleImport.update({
@@ -97,6 +104,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TurboBattleImport
       parentRoute: typeof rootRoute
     }
+    '/results/': {
+      id: '/results/'
+      path: '/'
+      fullPath: '/results/'
+      preLoaderRoute: typeof ResultsIndexImport
+      parentRoute: typeof ResultsImport
+    }
     '/turbo/': {
       id: '/turbo/'
       path: '/turbo'
@@ -134,6 +148,17 @@ const BattleRouteChildren: BattleRouteChildren = {
 const BattleRouteWithChildren =
   BattleRoute._addFileChildren(BattleRouteChildren)
 
+interface ResultsRouteChildren {
+  ResultsIndexRoute: typeof ResultsIndexRoute
+}
+
+const ResultsRouteChildren: ResultsRouteChildren = {
+  ResultsIndexRoute: ResultsIndexRoute,
+}
+
+const ResultsRouteWithChildren =
+  ResultsRoute._addFileChildren(ResultsRouteChildren)
+
 interface TurboBattleRouteChildren {
   TurboBattleRedRedDexIdBlueBlueDexIdRoute: typeof TurboBattleRedRedDexIdBlueBlueDexIdRoute
 }
@@ -150,8 +175,9 @@ const TurboBattleRouteWithChildren = TurboBattleRoute._addFileChildren(
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/battle': typeof BattleRouteWithChildren
-  '/results': typeof ResultsRoute
+  '/results': typeof ResultsRouteWithChildren
   '/turbo/battle': typeof TurboBattleRouteWithChildren
+  '/results/': typeof ResultsIndexRoute
   '/turbo': typeof TurboIndexRoute
   '/battle/red/$redDexId/blue/$blueDexId': typeof BattleRedRedDexIdBlueBlueDexIdRoute
   '/turbo/battle/red/$redDexId/blue/$blueDexId': typeof TurboBattleRedRedDexIdBlueBlueDexIdRoute
@@ -160,8 +186,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/battle': typeof BattleRouteWithChildren
-  '/results': typeof ResultsRoute
   '/turbo/battle': typeof TurboBattleRouteWithChildren
+  '/results': typeof ResultsIndexRoute
   '/turbo': typeof TurboIndexRoute
   '/battle/red/$redDexId/blue/$blueDexId': typeof BattleRedRedDexIdBlueBlueDexIdRoute
   '/turbo/battle/red/$redDexId/blue/$blueDexId': typeof TurboBattleRedRedDexIdBlueBlueDexIdRoute
@@ -171,8 +197,9 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/battle': typeof BattleRouteWithChildren
-  '/results': typeof ResultsRoute
+  '/results': typeof ResultsRouteWithChildren
   '/turbo/battle': typeof TurboBattleRouteWithChildren
+  '/results/': typeof ResultsIndexRoute
   '/turbo/': typeof TurboIndexRoute
   '/battle/red/$redDexId/blue/$blueDexId': typeof BattleRedRedDexIdBlueBlueDexIdRoute
   '/turbo/battle/red/$redDexId/blue/$blueDexId': typeof TurboBattleRedRedDexIdBlueBlueDexIdRoute
@@ -185,6 +212,7 @@ export interface FileRouteTypes {
     | '/battle'
     | '/results'
     | '/turbo/battle'
+    | '/results/'
     | '/turbo'
     | '/battle/red/$redDexId/blue/$blueDexId'
     | '/turbo/battle/red/$redDexId/blue/$blueDexId'
@@ -192,8 +220,8 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/battle'
-    | '/results'
     | '/turbo/battle'
+    | '/results'
     | '/turbo'
     | '/battle/red/$redDexId/blue/$blueDexId'
     | '/turbo/battle/red/$redDexId/blue/$blueDexId'
@@ -203,6 +231,7 @@ export interface FileRouteTypes {
     | '/battle'
     | '/results'
     | '/turbo/battle'
+    | '/results/'
     | '/turbo/'
     | '/battle/red/$redDexId/blue/$blueDexId'
     | '/turbo/battle/red/$redDexId/blue/$blueDexId'
@@ -212,7 +241,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BattleRoute: typeof BattleRouteWithChildren
-  ResultsRoute: typeof ResultsRoute
+  ResultsRoute: typeof ResultsRouteWithChildren
   TurboBattleRoute: typeof TurboBattleRouteWithChildren
   TurboIndexRoute: typeof TurboIndexRoute
 }
@@ -220,7 +249,7 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BattleRoute: BattleRouteWithChildren,
-  ResultsRoute: ResultsRoute,
+  ResultsRoute: ResultsRouteWithChildren,
   TurboBattleRoute: TurboBattleRouteWithChildren,
   TurboIndexRoute: TurboIndexRoute,
 }
@@ -252,13 +281,20 @@ export const routeTree = rootRoute
       ]
     },
     "/results": {
-      "filePath": "results.tsx"
+      "filePath": "results.tsx",
+      "children": [
+        "/results/"
+      ]
     },
     "/turbo/battle": {
       "filePath": "turbo.battle.tsx",
       "children": [
         "/turbo/battle/red/$redDexId/blue/$blueDexId"
       ]
+    },
+    "/results/": {
+      "filePath": "results.index.tsx",
+      "parent": "/results"
     },
     "/turbo/": {
       "filePath": "turbo.index.tsx"
