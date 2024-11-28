@@ -1,7 +1,6 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { seo } from "~/utils/seo";
 
-export const Route = createFileRoute("/battle")({
+export const Route = createFileRoute("/_battleLayout")({
   component: RouteComponent,
 });
 

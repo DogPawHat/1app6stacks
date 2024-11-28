@@ -10,7 +10,7 @@ import PokemonSprite from "~/utils/pokemon-sprite";
 import { getRandomPokemonPair } from "~/utils/get-random-pokemon-pair";
 
 export const Route = createFileRoute(
-  "/turbo/battle/red/$redDexId/blue/$blueDexId"
+  "/_battleLayout/turbo/battle/red/$redDexId/blue/$blueDexId"
 )({
   params: {
     parse: ({ redDexId, blueDexId }) => ({

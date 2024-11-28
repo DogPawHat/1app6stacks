@@ -8,7 +8,9 @@ import VoteFallback from "~/utils/vote-fallback";
 import PokemonSprite from "~/utils/pokemon-sprite";
 import { getRandomPokemonPair } from "~/utils/get-random-pokemon-pair";
 
-export const Route = createFileRoute("/battle/red/$redDexId/blue/$blueDexId")({
+export const Route = createFileRoute(
+  "/_battleLayout/battle/red/$redDexId/blue/$blueDexId"
+)({
   params: {
     parse: ({ redDexId, blueDexId }) => ({
       redDexId: parseInt(redDexId, 10),
