@@ -40,7 +40,8 @@
         "useArrayLiterals": "off",
         "useIsNan": "error",
         "useValidForDirection": "error",
-        "useYield": "error"
+        "useYield": "error",
+        "useExhaustiveDependencies": "error"
       },
       "style": { "noNamespace": "error", "useAsConstAssertion": "error" },
       "suspicious": {
