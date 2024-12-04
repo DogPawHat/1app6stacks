@@ -7,7 +7,15 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"ignore": ["node_modules", ".vinxi", "dist", "pnpm-lock.yaml", ".vercel"],
+		"ignore": [
+			"node_modules",
+			".vinxi",
+			"dist",
+			"pnpm-lock.yaml",
+			".vercel",
+			"routeTree.gen.ts",
+			"convex/_generated/**"
+		],
 		"include": ["app/**/*.ts", "app/**/*.tsx", "convex/**/*.ts"]
 	},
 	"formatter": {
