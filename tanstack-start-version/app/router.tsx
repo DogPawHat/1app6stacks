@@ -6,43 +6,43 @@ import { ConvexProvider } from "convex/react";
 import { routeTree } from "./routeTree.gen";
 import { env } from "./env";
 export function createRouter() {
-  const CONVEX_URL = env.VITE_CONVEX_URL;
-  const convexQueryClient = new ConvexQueryClient(CONVEX_URL);
+	const CONVEX_URL = env.VITE_CONVEX_URL;
+	const convexQueryClient = new ConvexQueryClient(CONVEX_URL);
 
-  const queryClient: QueryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        queryKeyHashFn: convexQueryClient.hashFn(),
-        queryFn: convexQueryClient.queryFn(),
-      },
-    },
-  });
-  convexQueryClient.connect(queryClient);
+	const queryClient: QueryClient = new QueryClient({
+		defaultOptions: {
+			queries: {
+				queryKeyHashFn: convexQueryClient.hashFn(),
+				queryFn: convexQueryClient.queryFn(),
+			},
+		},
+	});
+	convexQueryClient.connect(queryClient);
 
-  const router = routerWithQueryClient(
-    createTanStackRouter({
-      routeTree,
-      defaultPreload: "intent",
-      defaultPreloadStaleTime: 0,
-      context: { queryClient },
-      Wrap: ({ children }: { children: React.ReactNode }) => (
-        <ConvexProvider client={convexQueryClient.convexClient}>
-          {children}
-        </ConvexProvider>
-      ),
-    }),
-    queryClient
-  );
+	const router = routerWithQueryClient(
+		createTanStackRouter({
+			routeTree,
+			defaultPreload: "intent",
+			defaultPreloadStaleTime: 0,
+			context: { queryClient },
+			Wrap: ({ children }: { children: React.ReactNode }) => (
+				<ConvexProvider client={convexQueryClient.convexClient}>
+					{children}
+				</ConvexProvider>
+			),
+		}),
+		queryClient,
+	);
 
-  return router;
+	return router;
 }
 
 declare module "@tanstack/react-router" {
-  interface Register {
-    router: ReturnType<typeof createRouter>;
-  }
+	interface Register {
+		router: ReturnType<typeof createRouter>;
+	}
 
-  interface HistoryState {
-    newBattle: readonly [number, number] | undefined;
-  }
+	interface HistoryState {
+		newBattle: readonly [number, number] | undefined;
+	}
 }

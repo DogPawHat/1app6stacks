@@ -1,101 +1,107 @@
 import { internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
 import {
-  internalAction,
-  internalMutation,
-  mutation,
-  type MutationCtx,
-  query,
+	internalAction,
+	internalMutation,
+	mutation,
+	type MutationCtx,
+	query,
 } from "./_generated/server";
 import { v } from "convex/values";
 
 export const getPairByDexIds = query({
-  args: { redDexId: v.number(), blueDexId: v.number() },
-  handler: async (ctx, args): Promise<[Doc<"pokemon">, Doc<"pokemon">]> => {
-    const pair = [
-      (await ctx.db.query("pokemon").withIndex('by_dex_id', q => q.eq('dexId', args.redDexId)).first())!,
-      (await ctx.db.query("pokemon").withIndex('by_dex_id', q => q.eq('dexId', args.blueDexId)).first())!,
-    ] as [Doc<"pokemon">, Doc<"pokemon">];
+	args: { redDexId: v.number(), blueDexId: v.number() },
+	handler: async (ctx, args): Promise<[Doc<"pokemon">, Doc<"pokemon">]> => {
+		const pair = [
+			(await ctx.db
+				.query("pokemon")
+				.withIndex("by_dex_id", (q) => q.eq("dexId", args.redDexId))
+				.first())!,
+			(await ctx.db
+				.query("pokemon")
+				.withIndex("by_dex_id", (q) => q.eq("dexId", args.blueDexId))
+				.first())!,
+		] as [Doc<"pokemon">, Doc<"pokemon">];
 
-    return pair;
-  },
+		return pair;
+	},
 });
 
 export const vote = mutation({
-  args: { voteFor: v.id("pokemon"), voteAgainst: v.id("pokemon") },
-  handler: async (ctx, args) => {
-    const _id = await ctx.db.insert("votes", {
-      votedForId: args.voteFor,
-      votedAgainstId: args.voteAgainst,
-    });
-    await updateTally(ctx, args.voteFor, true);
-    await updateTally(ctx, args.voteAgainst, false);
-  },
+	args: { voteFor: v.id("pokemon"), voteAgainst: v.id("pokemon") },
+	handler: async (ctx, args) => {
+		const _id = await ctx.db.insert("votes", {
+			votedForId: args.voteFor,
+			votedAgainstId: args.voteAgainst,
+		});
+		await updateTally(ctx, args.voteFor, true);
+		await updateTally(ctx, args.voteAgainst, false);
+	},
 });
 
 async function updateTally(
-  ctx: MutationCtx,
-  pokemonId: Id<"pokemon">,
-  win: boolean,
+	ctx: MutationCtx,
+	pokemonId: Id<"pokemon">,
+	win: boolean,
 ) {
-  const pokemon = await ctx.db.get(pokemonId);
-  let tallyOverrides = pokemon!.tally;
-  if (win) {
-    tallyOverrides.upVotes++;
-  } else {
-    tallyOverrides.downVotes++;
-  }
-  tallyOverrides.winPercentage =
-    (tallyOverrides.upVotes /
-      (tallyOverrides.upVotes + tallyOverrides.downVotes)) *
-    100;
-  await ctx.db.patch(pokemonId, {
-    tally: tallyOverrides,
-  });
+	const pokemon = await ctx.db.get(pokemonId);
+	let tallyOverrides = pokemon!.tally;
+	if (win) {
+		tallyOverrides.upVotes++;
+	} else {
+		tallyOverrides.downVotes++;
+	}
+	tallyOverrides.winPercentage =
+		(tallyOverrides.upVotes /
+			(tallyOverrides.upVotes + tallyOverrides.downVotes)) *
+		100;
+	await ctx.db.patch(pokemonId, {
+		tally: tallyOverrides,
+	});
 }
 
 export const results = query({
-  handler: async (ctx) => {
-    return ctx.db
-      .query("pokemon")
-      .withIndex("by_tally")
-      .order("desc")
-      .collect();
-  },
+	handler: async (ctx) => {
+		return ctx.db
+			.query("pokemon")
+			.withIndex("by_tally")
+			.order("desc")
+			.collect();
+	},
 });
 
 //////  INIT STUFF BELOW
 export const addPokemon = internalMutation({
-  args: { pokemon: v.array(v.object({ name: v.string(), dexId: v.number() })) },
-  handler: async (ctx, args) => {
-    for (const p of args.pokemon) {
-      await ctx.db.insert("pokemon", {
-        name: p.name,
-        dexId: p.dexId,
-        tally: { winPercentage: 0, upVotes: 0, downVotes: 0 },
-      });
-    }
-  },
+	args: { pokemon: v.array(v.object({ name: v.string(), dexId: v.number() })) },
+	handler: async (ctx, args) => {
+		for (const p of args.pokemon) {
+			await ctx.db.insert("pokemon", {
+				name: p.name,
+				dexId: p.dexId,
+				tally: { winPercentage: 0, upVotes: 0, downVotes: 0 },
+			});
+		}
+	},
 });
 
 // Just run this in the Convex dashboard.
 export const initDatabase = internalAction({
-  args: {},
-  handler: async (ctx) => {
-    const allPokemon = await getAllPokemon();
+	args: {},
+	handler: async (ctx) => {
+		const allPokemon = await getAllPokemon();
 
-    const formattedPokemon = allPokemon.map((p) => ({
-      dexId: p.dexNumber,
-      name: p.name,
-    }));
+		const formattedPokemon = allPokemon.map((p) => ({
+			dexId: p.dexNumber,
+			name: p.name,
+		}));
 
-    for (let i = 0; i < formattedPokemon.length; i += 100) {
-      const batch = formattedPokemon.slice(i, i + 100);
-      await ctx.runMutation(internal.pokemon.addPokemon, {
-        pokemon: batch,
-      });
-    }
-  },
+		for (let i = 0; i < formattedPokemon.length; i += 100) {
+			const batch = formattedPokemon.slice(i, i + 100);
+			await ctx.runMutation(internal.pokemon.addPokemon, {
+				pokemon: batch,
+			});
+		}
+	},
 });
 
 /**
@@ -104,9 +110,9 @@ export const initDatabase = internalAction({
  * Results are cached indefinitely using Next.js cache.
  */
 async function getAllPokemon() {
-  // Use the graphql endpoint because the normal one won't let you get names
-  // in a single query
-  const query = `
+	// Use the graphql endpoint because the normal one won't let you get names
+	// in a single query
+	const query = `
     query GetAllPokemon {
       pokemon_v2_pokemon(where: {id: {_lte: 1025}}) {
         id
@@ -117,25 +123,25 @@ async function getAllPokemon() {
     }
   `;
 
-  const response = await fetch("https://beta.pokeapi.co/graphql/v1beta", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ query }),
-  });
+	const response = await fetch("https://beta.pokeapi.co/graphql/v1beta", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({ query }),
+	});
 
-  const data = (await response.json()).data as {
-    pokemon_v2_pokemon: {
-      id: number;
-      pokemon_v2_pokemonspecy: {
-        name: string;
-      };
-    }[];
-  };
+	const data = (await response.json()).data as {
+		pokemon_v2_pokemon: {
+			id: number;
+			pokemon_v2_pokemonspecy: {
+				name: string;
+			};
+		}[];
+	};
 
-  return data.pokemon_v2_pokemon.map((pokemon) => ({
-    name: pokemon.pokemon_v2_pokemonspecy.name,
-    dexNumber: pokemon.id,
-  }));
+	return data.pokemon_v2_pokemon.map((pokemon) => ({
+		name: pokemon.pokemon_v2_pokemonspecy.name,
+		dexNumber: pokemon.id,
+	}));
 }

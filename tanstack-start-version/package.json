@@ -7,7 +7,10 @@
     "dev": "vinxi dev",
     "build": "vinxi build",
     "start": "vinxi start",
-    "lint": "biome lint app"
+    "lint": "pnpm lint:app",
+    "lint:app": "eslint --flag unstable_config_lookup_from_file app",
+    "format": "biome format",
+    "format:fix": "biome format --write"
   },
   "dependencies": {
     "@convex-dev/react-query": "0.0.0-alpha.8",

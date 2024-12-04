@@ -10,249 +10,249 @@
 
 // Import Routes
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as ResultsImport } from './routes/results'
-import { Route as BattleLayoutImport } from './routes/_battleLayout'
-import { Route as IndexImport } from './routes/index'
-import { Route as TurboIndexImport } from './routes/turbo.index'
-import { Route as ResultsIndexImport } from './routes/results.index'
-import { Route as BattleLayoutTurboImport } from './routes/_battleLayout.turbo'
-import { Route as BattleLayoutBattleRedRedDexIdBlueBlueDexIdImport } from './routes/_battleLayout.battle.red.$redDexId.blue.$blueDexId'
-import { Route as BattleLayoutTurboBattleRedRedDexIdBlueBlueDexIdImport } from './routes/_battleLayout.turbo.battle.red.$redDexId.blue.$blueDexId'
+import { Route as rootRoute } from "./routes/__root";
+import { Route as ResultsImport } from "./routes/results";
+import { Route as BattleLayoutImport } from "./routes/_battleLayout";
+import { Route as IndexImport } from "./routes/index";
+import { Route as TurboIndexImport } from "./routes/turbo.index";
+import { Route as ResultsIndexImport } from "./routes/results.index";
+import { Route as BattleLayoutTurboImport } from "./routes/_battleLayout.turbo";
+import { Route as BattleLayoutBattleRedRedDexIdBlueBlueDexIdImport } from "./routes/_battleLayout.battle.red.$redDexId.blue.$blueDexId";
+import { Route as BattleLayoutTurboBattleRedRedDexIdBlueBlueDexIdImport } from "./routes/_battleLayout.turbo.battle.red.$redDexId.blue.$blueDexId";
 
 // Create/Update Routes
 
 const ResultsRoute = ResultsImport.update({
-  id: '/results',
-  path: '/results',
-  getParentRoute: () => rootRoute,
-} as any)
+	id: "/results",
+	path: "/results",
+	getParentRoute: () => rootRoute,
+} as any);
 
 const BattleLayoutRoute = BattleLayoutImport.update({
-  id: '/_battleLayout',
-  getParentRoute: () => rootRoute,
-} as any)
+	id: "/_battleLayout",
+	getParentRoute: () => rootRoute,
+} as any);
 
 const IndexRoute = IndexImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRoute,
-} as any)
+	id: "/",
+	path: "/",
+	getParentRoute: () => rootRoute,
+} as any);
 
 const TurboIndexRoute = TurboIndexImport.update({
-  id: '/turbo/',
-  path: '/turbo/',
-  getParentRoute: () => rootRoute,
-} as any)
+	id: "/turbo/",
+	path: "/turbo/",
+	getParentRoute: () => rootRoute,
+} as any);
 
 const ResultsIndexRoute = ResultsIndexImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => ResultsRoute,
-} as any)
+	id: "/",
+	path: "/",
+	getParentRoute: () => ResultsRoute,
+} as any);
 
 const BattleLayoutTurboRoute = BattleLayoutTurboImport.update({
-  id: '/turbo',
-  path: '/turbo',
-  getParentRoute: () => BattleLayoutRoute,
-} as any)
+	id: "/turbo",
+	path: "/turbo",
+	getParentRoute: () => BattleLayoutRoute,
+} as any);
 
 const BattleLayoutBattleRedRedDexIdBlueBlueDexIdRoute =
-  BattleLayoutBattleRedRedDexIdBlueBlueDexIdImport.update({
-    id: '/battle/red/$redDexId/blue/$blueDexId',
-    path: '/battle/red/$redDexId/blue/$blueDexId',
-    getParentRoute: () => BattleLayoutRoute,
-  } as any)
+	BattleLayoutBattleRedRedDexIdBlueBlueDexIdImport.update({
+		id: "/battle/red/$redDexId/blue/$blueDexId",
+		path: "/battle/red/$redDexId/blue/$blueDexId",
+		getParentRoute: () => BattleLayoutRoute,
+	} as any);
 
 const BattleLayoutTurboBattleRedRedDexIdBlueBlueDexIdRoute =
-  BattleLayoutTurboBattleRedRedDexIdBlueBlueDexIdImport.update({
-    id: '/battle/red/$redDexId/blue/$blueDexId',
-    path: '/battle/red/$redDexId/blue/$blueDexId',
-    getParentRoute: () => BattleLayoutTurboRoute,
-  } as any)
+	BattleLayoutTurboBattleRedRedDexIdBlueBlueDexIdImport.update({
+		id: "/battle/red/$redDexId/blue/$blueDexId",
+		path: "/battle/red/$redDexId/blue/$blueDexId",
+		getParentRoute: () => BattleLayoutTurboRoute,
+	} as any);
 
 // Populate the FileRoutesByPath interface
 
-declare module '@tanstack/react-router' {
-  interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/_battleLayout': {
-      id: '/_battleLayout'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof BattleLayoutImport
-      parentRoute: typeof rootRoute
-    }
-    '/results': {
-      id: '/results'
-      path: '/results'
-      fullPath: '/results'
-      preLoaderRoute: typeof ResultsImport
-      parentRoute: typeof rootRoute
-    }
-    '/_battleLayout/turbo': {
-      id: '/_battleLayout/turbo'
-      path: '/turbo'
-      fullPath: '/turbo'
-      preLoaderRoute: typeof BattleLayoutTurboImport
-      parentRoute: typeof BattleLayoutImport
-    }
-    '/results/': {
-      id: '/results/'
-      path: '/'
-      fullPath: '/results/'
-      preLoaderRoute: typeof ResultsIndexImport
-      parentRoute: typeof ResultsImport
-    }
-    '/turbo/': {
-      id: '/turbo/'
-      path: '/turbo'
-      fullPath: '/turbo'
-      preLoaderRoute: typeof TurboIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/_battleLayout/battle/red/$redDexId/blue/$blueDexId': {
-      id: '/_battleLayout/battle/red/$redDexId/blue/$blueDexId'
-      path: '/battle/red/$redDexId/blue/$blueDexId'
-      fullPath: '/battle/red/$redDexId/blue/$blueDexId'
-      preLoaderRoute: typeof BattleLayoutBattleRedRedDexIdBlueBlueDexIdImport
-      parentRoute: typeof BattleLayoutImport
-    }
-    '/_battleLayout/turbo/battle/red/$redDexId/blue/$blueDexId': {
-      id: '/_battleLayout/turbo/battle/red/$redDexId/blue/$blueDexId'
-      path: '/battle/red/$redDexId/blue/$blueDexId'
-      fullPath: '/turbo/battle/red/$redDexId/blue/$blueDexId'
-      preLoaderRoute: typeof BattleLayoutTurboBattleRedRedDexIdBlueBlueDexIdImport
-      parentRoute: typeof BattleLayoutTurboImport
-    }
-  }
+declare module "@tanstack/react-router" {
+	interface FileRoutesByPath {
+		"/": {
+			id: "/";
+			path: "/";
+			fullPath: "/";
+			preLoaderRoute: typeof IndexImport;
+			parentRoute: typeof rootRoute;
+		};
+		"/_battleLayout": {
+			id: "/_battleLayout";
+			path: "";
+			fullPath: "";
+			preLoaderRoute: typeof BattleLayoutImport;
+			parentRoute: typeof rootRoute;
+		};
+		"/results": {
+			id: "/results";
+			path: "/results";
+			fullPath: "/results";
+			preLoaderRoute: typeof ResultsImport;
+			parentRoute: typeof rootRoute;
+		};
+		"/_battleLayout/turbo": {
+			id: "/_battleLayout/turbo";
+			path: "/turbo";
+			fullPath: "/turbo";
+			preLoaderRoute: typeof BattleLayoutTurboImport;
+			parentRoute: typeof BattleLayoutImport;
+		};
+		"/results/": {
+			id: "/results/";
+			path: "/";
+			fullPath: "/results/";
+			preLoaderRoute: typeof ResultsIndexImport;
+			parentRoute: typeof ResultsImport;
+		};
+		"/turbo/": {
+			id: "/turbo/";
+			path: "/turbo";
+			fullPath: "/turbo";
+			preLoaderRoute: typeof TurboIndexImport;
+			parentRoute: typeof rootRoute;
+		};
+		"/_battleLayout/battle/red/$redDexId/blue/$blueDexId": {
+			id: "/_battleLayout/battle/red/$redDexId/blue/$blueDexId";
+			path: "/battle/red/$redDexId/blue/$blueDexId";
+			fullPath: "/battle/red/$redDexId/blue/$blueDexId";
+			preLoaderRoute: typeof BattleLayoutBattleRedRedDexIdBlueBlueDexIdImport;
+			parentRoute: typeof BattleLayoutImport;
+		};
+		"/_battleLayout/turbo/battle/red/$redDexId/blue/$blueDexId": {
+			id: "/_battleLayout/turbo/battle/red/$redDexId/blue/$blueDexId";
+			path: "/battle/red/$redDexId/blue/$blueDexId";
+			fullPath: "/turbo/battle/red/$redDexId/blue/$blueDexId";
+			preLoaderRoute: typeof BattleLayoutTurboBattleRedRedDexIdBlueBlueDexIdImport;
+			parentRoute: typeof BattleLayoutTurboImport;
+		};
+	}
 }
 
 // Create and export the route tree
 
 interface BattleLayoutTurboRouteChildren {
-  BattleLayoutTurboBattleRedRedDexIdBlueBlueDexIdRoute: typeof BattleLayoutTurboBattleRedRedDexIdBlueBlueDexIdRoute
+	BattleLayoutTurboBattleRedRedDexIdBlueBlueDexIdRoute: typeof BattleLayoutTurboBattleRedRedDexIdBlueBlueDexIdRoute;
 }
 
 const BattleLayoutTurboRouteChildren: BattleLayoutTurboRouteChildren = {
-  BattleLayoutTurboBattleRedRedDexIdBlueBlueDexIdRoute:
-    BattleLayoutTurboBattleRedRedDexIdBlueBlueDexIdRoute,
-}
+	BattleLayoutTurboBattleRedRedDexIdBlueBlueDexIdRoute:
+		BattleLayoutTurboBattleRedRedDexIdBlueBlueDexIdRoute,
+};
 
 const BattleLayoutTurboRouteWithChildren =
-  BattleLayoutTurboRoute._addFileChildren(BattleLayoutTurboRouteChildren)
+	BattleLayoutTurboRoute._addFileChildren(BattleLayoutTurboRouteChildren);
 
 interface BattleLayoutRouteChildren {
-  BattleLayoutTurboRoute: typeof BattleLayoutTurboRouteWithChildren
-  BattleLayoutBattleRedRedDexIdBlueBlueDexIdRoute: typeof BattleLayoutBattleRedRedDexIdBlueBlueDexIdRoute
+	BattleLayoutTurboRoute: typeof BattleLayoutTurboRouteWithChildren;
+	BattleLayoutBattleRedRedDexIdBlueBlueDexIdRoute: typeof BattleLayoutBattleRedRedDexIdBlueBlueDexIdRoute;
 }
 
 const BattleLayoutRouteChildren: BattleLayoutRouteChildren = {
-  BattleLayoutTurboRoute: BattleLayoutTurboRouteWithChildren,
-  BattleLayoutBattleRedRedDexIdBlueBlueDexIdRoute:
-    BattleLayoutBattleRedRedDexIdBlueBlueDexIdRoute,
-}
+	BattleLayoutTurboRoute: BattleLayoutTurboRouteWithChildren,
+	BattleLayoutBattleRedRedDexIdBlueBlueDexIdRoute:
+		BattleLayoutBattleRedRedDexIdBlueBlueDexIdRoute,
+};
 
 const BattleLayoutRouteWithChildren = BattleLayoutRoute._addFileChildren(
-  BattleLayoutRouteChildren,
-)
+	BattleLayoutRouteChildren,
+);
 
 interface ResultsRouteChildren {
-  ResultsIndexRoute: typeof ResultsIndexRoute
+	ResultsIndexRoute: typeof ResultsIndexRoute;
 }
 
 const ResultsRouteChildren: ResultsRouteChildren = {
-  ResultsIndexRoute: ResultsIndexRoute,
-}
+	ResultsIndexRoute: ResultsIndexRoute,
+};
 
 const ResultsRouteWithChildren =
-  ResultsRoute._addFileChildren(ResultsRouteChildren)
+	ResultsRoute._addFileChildren(ResultsRouteChildren);
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '': typeof BattleLayoutRouteWithChildren
-  '/results': typeof ResultsRouteWithChildren
-  '/turbo': typeof TurboIndexRoute
-  '/results/': typeof ResultsIndexRoute
-  '/battle/red/$redDexId/blue/$blueDexId': typeof BattleLayoutBattleRedRedDexIdBlueBlueDexIdRoute
-  '/turbo/battle/red/$redDexId/blue/$blueDexId': typeof BattleLayoutTurboBattleRedRedDexIdBlueBlueDexIdRoute
+	"/": typeof IndexRoute;
+	"": typeof BattleLayoutRouteWithChildren;
+	"/results": typeof ResultsRouteWithChildren;
+	"/turbo": typeof TurboIndexRoute;
+	"/results/": typeof ResultsIndexRoute;
+	"/battle/red/$redDexId/blue/$blueDexId": typeof BattleLayoutBattleRedRedDexIdBlueBlueDexIdRoute;
+	"/turbo/battle/red/$redDexId/blue/$blueDexId": typeof BattleLayoutTurboBattleRedRedDexIdBlueBlueDexIdRoute;
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '': typeof BattleLayoutRouteWithChildren
-  '/turbo': typeof TurboIndexRoute
-  '/results': typeof ResultsIndexRoute
-  '/battle/red/$redDexId/blue/$blueDexId': typeof BattleLayoutBattleRedRedDexIdBlueBlueDexIdRoute
-  '/turbo/battle/red/$redDexId/blue/$blueDexId': typeof BattleLayoutTurboBattleRedRedDexIdBlueBlueDexIdRoute
+	"/": typeof IndexRoute;
+	"": typeof BattleLayoutRouteWithChildren;
+	"/turbo": typeof TurboIndexRoute;
+	"/results": typeof ResultsIndexRoute;
+	"/battle/red/$redDexId/blue/$blueDexId": typeof BattleLayoutBattleRedRedDexIdBlueBlueDexIdRoute;
+	"/turbo/battle/red/$redDexId/blue/$blueDexId": typeof BattleLayoutTurboBattleRedRedDexIdBlueBlueDexIdRoute;
 }
 
 export interface FileRoutesById {
-  __root__: typeof rootRoute
-  '/': typeof IndexRoute
-  '/_battleLayout': typeof BattleLayoutRouteWithChildren
-  '/results': typeof ResultsRouteWithChildren
-  '/_battleLayout/turbo': typeof BattleLayoutTurboRouteWithChildren
-  '/results/': typeof ResultsIndexRoute
-  '/turbo/': typeof TurboIndexRoute
-  '/_battleLayout/battle/red/$redDexId/blue/$blueDexId': typeof BattleLayoutBattleRedRedDexIdBlueBlueDexIdRoute
-  '/_battleLayout/turbo/battle/red/$redDexId/blue/$blueDexId': typeof BattleLayoutTurboBattleRedRedDexIdBlueBlueDexIdRoute
+	__root__: typeof rootRoute;
+	"/": typeof IndexRoute;
+	"/_battleLayout": typeof BattleLayoutRouteWithChildren;
+	"/results": typeof ResultsRouteWithChildren;
+	"/_battleLayout/turbo": typeof BattleLayoutTurboRouteWithChildren;
+	"/results/": typeof ResultsIndexRoute;
+	"/turbo/": typeof TurboIndexRoute;
+	"/_battleLayout/battle/red/$redDexId/blue/$blueDexId": typeof BattleLayoutBattleRedRedDexIdBlueBlueDexIdRoute;
+	"/_battleLayout/turbo/battle/red/$redDexId/blue/$blueDexId": typeof BattleLayoutTurboBattleRedRedDexIdBlueBlueDexIdRoute;
 }
 
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | ''
-    | '/results'
-    | '/turbo'
-    | '/results/'
-    | '/battle/red/$redDexId/blue/$blueDexId'
-    | '/turbo/battle/red/$redDexId/blue/$blueDexId'
-  fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | ''
-    | '/turbo'
-    | '/results'
-    | '/battle/red/$redDexId/blue/$blueDexId'
-    | '/turbo/battle/red/$redDexId/blue/$blueDexId'
-  id:
-    | '__root__'
-    | '/'
-    | '/_battleLayout'
-    | '/results'
-    | '/_battleLayout/turbo'
-    | '/results/'
-    | '/turbo/'
-    | '/_battleLayout/battle/red/$redDexId/blue/$blueDexId'
-    | '/_battleLayout/turbo/battle/red/$redDexId/blue/$blueDexId'
-  fileRoutesById: FileRoutesById
+	fileRoutesByFullPath: FileRoutesByFullPath;
+	fullPaths:
+		| "/"
+		| ""
+		| "/results"
+		| "/turbo"
+		| "/results/"
+		| "/battle/red/$redDexId/blue/$blueDexId"
+		| "/turbo/battle/red/$redDexId/blue/$blueDexId";
+	fileRoutesByTo: FileRoutesByTo;
+	to:
+		| "/"
+		| ""
+		| "/turbo"
+		| "/results"
+		| "/battle/red/$redDexId/blue/$blueDexId"
+		| "/turbo/battle/red/$redDexId/blue/$blueDexId";
+	id:
+		| "__root__"
+		| "/"
+		| "/_battleLayout"
+		| "/results"
+		| "/_battleLayout/turbo"
+		| "/results/"
+		| "/turbo/"
+		| "/_battleLayout/battle/red/$redDexId/blue/$blueDexId"
+		| "/_battleLayout/turbo/battle/red/$redDexId/blue/$blueDexId";
+	fileRoutesById: FileRoutesById;
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  BattleLayoutRoute: typeof BattleLayoutRouteWithChildren
-  ResultsRoute: typeof ResultsRouteWithChildren
-  TurboIndexRoute: typeof TurboIndexRoute
+	IndexRoute: typeof IndexRoute;
+	BattleLayoutRoute: typeof BattleLayoutRouteWithChildren;
+	ResultsRoute: typeof ResultsRouteWithChildren;
+	TurboIndexRoute: typeof TurboIndexRoute;
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  BattleLayoutRoute: BattleLayoutRouteWithChildren,
-  ResultsRoute: ResultsRouteWithChildren,
-  TurboIndexRoute: TurboIndexRoute,
-}
+	IndexRoute: IndexRoute,
+	BattleLayoutRoute: BattleLayoutRouteWithChildren,
+	ResultsRoute: ResultsRouteWithChildren,
+	TurboIndexRoute: TurboIndexRoute,
+};
 
 export const routeTree = rootRoute
-  ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+	._addFileChildren(rootRouteChildren)
+	._addFileTypes<FileRouteTypes>();
 
 /* ROUTE_MANIFEST_START
 {
