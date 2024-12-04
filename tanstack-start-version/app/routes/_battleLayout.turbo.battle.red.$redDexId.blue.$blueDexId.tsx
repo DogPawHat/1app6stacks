@@ -21,19 +21,35 @@ export const Route = createFileRoute(
 			blueDexId: blueDexId.toString(),
 		}),
 	},
-	loader: ({ context, params }) => {
-		context.queryClient.prefetchQuery(
+	loader: async ({ context, params, preload }) => {
+		const nextPair = getRandomPokemonPair(Math.random());
+
+		if (preload === false) {
+			context.queryClient.prefetchQuery(
+				convexQuery(api.pokemon.getPairByDexIds, {
+					redDexId: nextPair[0],
+					blueDexId: nextPair[1],
+				}),
+			);
+		}
+
+		await context.queryClient.ensureQueryData(
 			convexQuery(api.pokemon.getPairByDexIds, {
 				redDexId: params.redDexId,
 				blueDexId: params.blueDexId,
 			}),
 		);
+
+		return {
+			nextPair,
+		};
 	},
 	pendingComponent: VoteFallback,
 	component: VoteContent,
 });
 
 function VoteContent() {
+	const { nextPair } = Route.useLoaderData();
 	const router = useRouter();
 	const navigate = Route.useNavigate();
 	const { redDexId, blueDexId } = Route.useParams();
@@ -47,27 +63,14 @@ function VoteContent() {
 	const commitVote = useConvexMutation(api.pokemon.vote);
 	const { mutate: vote, isPending: votePending } = useMutation({
 		mutationFn: commitVote,
-		onMutate: () => {
-			const nextPair = getRandomPokemonPair(Math.random());
-			router.preloadRoute({
-				to: Route.to,
-				params: {
-					redDexId: nextPair[0],
-					blueDexId: nextPair[1],
-				},
-			});
-			return {
-				nextPair,
-			};
-		},
 		onSuccess: async (_data, _variables, context) => {
 			router.preloadRoute({
 				to: "/results",
 			});
 			navigate({
 				params: {
-					redDexId: context.nextPair[0],
-					blueDexId: context.nextPair[1],
+					redDexId: nextPair[0],
+					blueDexId: nextPair[1],
 				},
 			});
 		},
