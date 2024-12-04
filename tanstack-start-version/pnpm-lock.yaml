@@ -58,7 +58,7 @@ importers:
         specifier: ^5.61.4
         version: 5.61.4(eslint@9.15.0(jiti@2.4.0))(typescript@5.7.2)
       '@tanstack/eslint-plugin-router':
-        specifier: ^1.82.12
+        specifier: 1.82.12
         version: 1.82.12(eslint@9.15.0(jiti@2.4.0))(typescript@5.7.2)
       '@tanstack/react-query-devtools':
         specifier: ^5.61.5
